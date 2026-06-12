@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { createReport } from "@/lib/firebase/reportService";
-import { Camera, MapPin, UploadCloud, CheckCircle2, ArrowLeft } from "lucide-react";
+import { Camera, MapPin, UploadCloud, CheckCircle2, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useUserStore } from "@/store/useUserStore";
 
 export default function NewReportPage() {
+  const { user } = useUserStore();
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [description, setDescription] = useState("");
@@ -53,7 +55,7 @@ export default function NewReportPage() {
     
     setStatus("uploading");
     try {
-      await createReport(file, description, location);
+      await createReport(file, description, location, user?.uid || "anonymous");
       setStatus("success");
     } catch (err: any) {
       console.error(err);
@@ -92,6 +94,12 @@ export default function NewReportPage() {
         <ArrowLeft className="w-4 h-4 mr-2" />
         Volver al inicio
       </Link>
+      
+      {!user && (
+        <div className="mb-6 p-4 bg-brand-50 border border-brand-100 rounded-2xl flex items-start gap-3">
+          <p className="text-sm text-brand-700 font-medium">Estás reportando de forma anónima. Inicia sesión en tu panel para ganar puntos por este reporte.</p>
+        </div>
+      )}
       
       <h1 className="text-3xl font-bold mb-2">Nuevo Reporte</h1>
       <p className="text-muted-foreground mb-8">Sube una foto clara del foco de contaminación.</p>

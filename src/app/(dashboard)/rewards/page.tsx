@@ -1,8 +1,18 @@
-import Link from "next/link";
-import { ArrowLeft, Gift, Utensils, Ticket, HeartHandshake } from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import { Utensils, Ticket, HeartHandshake, Loader2, CheckCircle2 } from "lucide-react";
+import { useUserStore } from "@/store/useUserStore";
+import { doc, updateDoc, increment } from "firebase/firestore";
+import { db } from "@/lib/firebase/clientApp";
 
 export default function RewardsPage() {
-  const userPoints = 450;
+  const { user, setUser } = useUserStore();
+  const [redeemingId, setRedeemingId] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  if (!user) return null;
+  const userPoints = user.points;
 
   const catalog = [
     {
@@ -31,27 +41,51 @@ export default function RewardsPage() {
     }
   ];
 
+  const handleRedeem = async (rewardId: string, cost: number) => {
+    if (userPoints < cost) return;
+    setRedeemingId(rewardId);
+    
+    try {
+      const userRef = doc(db, "users", user.uid);
+      await updateDoc(userRef, {
+        points: increment(-cost)
+      });
+      setUser({ ...user, points: userPoints - cost });
+      setSuccessMsg("¡Canje exitoso! Te contactaremos pronto para entregarte tu recompensa.");
+      setTimeout(() => setSuccessMsg(null), 5000);
+    } catch (err) {
+      console.error(err);
+      alert("Hubo un error al procesar el canje.");
+    } finally {
+      setRedeemingId(null);
+    }
+  };
+
   return (
-    <main className="min-h-dvh flex flex-col max-w-5xl mx-auto p-6 pt-12 pb-24">
+    <div className="flex flex-col pb-24">
       <header className="mb-12">
-        <Link href="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-6">
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Volver al inicio
-        </Link>
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Recompensas</h1>
             <p className="text-muted-foreground mt-1">Canjea tus puntos por premios o donaciones.</p>
           </div>
-          <div className="px-4 py-2 bg-muted rounded-full inline-flex items-center w-fit">
-            <span className="text-sm font-medium">Tienes <strong className="text-brand-600">{userPoints} pts</strong></span>
+          <div className="px-4 py-2 bg-brand-50 border border-brand-100 rounded-full inline-flex items-center w-fit">
+            <span className="text-sm font-medium">Tienes <strong className="text-brand-600 text-lg ml-1">{userPoints} pts</strong></span>
           </div>
         </div>
       </header>
 
+      {successMsg && (
+        <div className="mb-8 p-4 bg-green-50 text-green-700 border border-green-200 rounded-2xl flex items-center gap-3">
+          <CheckCircle2 className="w-5 h-5" />
+          <p className="font-medium">{successMsg}</p>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {catalog.map(item => {
           const canAfford = userPoints >= item.points;
+          const isRedeeming = redeemingId === item.id;
           return (
             <div key={item.id} className="flex flex-col bg-background border border-zinc-200 rounded-3xl overflow-hidden hover:shadow-lg transition-shadow">
               <div className="w-full aspect-video bg-zinc-100 relative">
@@ -63,16 +97,17 @@ export default function RewardsPage() {
               <div className="p-6 flex flex-col flex-1">
                 <h3 className="text-xl font-bold mb-2 line-clamp-2">{item.title}</h3>
                 <div className="mt-auto pt-6 flex items-center justify-between">
-                  <span className="font-semibold text-brand-600">{item.points} pts</span>
+                  <span className="font-semibold text-brand-600 text-lg">{item.points} pts</span>
                   <button 
-                    disabled={!canAfford}
-                    className={`px-5 py-2.5 rounded-full font-medium text-sm transition-colors ${
+                    onClick={() => handleRedeem(item.id, item.points)}
+                    disabled={!canAfford || isRedeeming}
+                    className={`px-5 py-2.5 rounded-full font-medium text-sm transition-colors flex items-center ${
                       canAfford 
                       ? "bg-foreground text-background hover:bg-zinc-800" 
                       : "bg-muted text-muted-foreground cursor-not-allowed"
                     }`}
                   >
-                    {canAfford ? "Canjear" : "Faltan puntos"}
+                    {isRedeeming ? <Loader2 className="w-4 h-4 animate-spin" /> : canAfford ? "Canjear" : "Faltan puntos"}
                   </button>
                 </div>
               </div>
@@ -80,6 +115,6 @@ export default function RewardsPage() {
           )
         })}
       </div>
-    </main>
+    </div>
   );
 }
