@@ -45,7 +45,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           <Link href="/" className="inline-block text-sm text-muted-foreground hover:text-foreground">
             Volver al inicio
           </Link>
-        </div>
+        </motion.div>
       </div>
     );
   }
