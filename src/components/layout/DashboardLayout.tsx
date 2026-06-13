@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useUserStore } from "@/store/useUserStore";
 import { logout, signInWithGoogle } from "@/lib/firebase/authService";
-import { LayoutDashboard, Award, Shield, LogOut, Loader2, ArrowLeft, User } from "lucide-react";
+import { LayoutDashboard, Award, Shield, LogOut, Loader2, ArrowLeft, User, Camera } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -85,13 +85,45 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   ];
 
   return (
-    <div className="min-h-dvh flex flex-col md:flex-row bg-muted/30">
-      {/* Sidebar */}
+    <div className="min-h-dvh flex flex-col md:flex-row bg-muted/30 relative">
+      
+      {/* Mobile Top Header */}
+      <header className="md:hidden flex items-center justify-between p-4 bg-background/80 backdrop-blur-xl border-b border-zinc-200 sticky top-0 z-40">
+        <div className="flex items-center gap-3">
+          {user.photoURL ? (
+            <img src={user.photoURL} alt="Profile" className="w-8 h-8 rounded-full" />
+          ) : (
+            <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center font-bold text-xs">
+              {user.displayName.charAt(0)}
+            </div>
+          )}
+          <span className="text-sm font-semibold truncate max-w-[120px]">{user.displayName}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <button 
+            onClick={async () => {
+              if (useUserStore.getState().isDemoMode) {
+                useUserStore.getState().setDemoMode(false);
+                useUserStore.getState().setUser(null);
+              } else {
+                await logout();
+              }
+              router.push("/");
+            }}
+            className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
+          >
+            <LogOut className="w-5 h-5" />
+          </button>
+        </div>
+      </header>
+
+      {/* Sidebar (Desktop Only) */}
       <motion.aside 
         initial={{ x: -50, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="w-full md:w-64 bg-background border-r border-zinc-200 flex flex-col p-6 gap-8 shrink-0 glass"
+        className="hidden md:flex w-64 bg-background border-r border-zinc-200 flex-col p-6 gap-8 shrink-0 glass"
       >
         <Link href="/" className="inline-flex items-center text-sm font-medium hover:text-brand-600 transition-colors">
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -157,7 +189,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       </motion.aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-6 md:p-10 overflow-y-auto h-dvh">
+      <main className="flex-1 p-4 md:p-10 overflow-y-auto h-dvh pb-32 md:pb-10">
         <AnimatePresence mode="wait">
           <motion.div 
             key={pathname}
@@ -171,6 +203,40 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           </motion.div>
         </AnimatePresence>
       </main>
+
+      {/* Bottom Navigation Bar (Mobile Only) */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-xl border-t border-zinc-200/50 z-50 px-8 py-3 flex items-center justify-between shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pb-safe">
+        
+        {/* Nav Item: Panel */}
+        <Link 
+          href="/dashboard" 
+          className={`flex flex-col items-center gap-1 transition-colors ${pathname === "/dashboard" ? "text-brand-600" : "text-muted-foreground hover:text-foreground"}`}
+        >
+          <LayoutDashboard className="w-6 h-6" />
+          <span className="text-[10px] font-medium">Panel</span>
+        </Link>
+
+        {/* Floating Action Button: Reportar */}
+        <div className="relative -top-8 flex justify-center">
+          <Link 
+            href="/report/new" 
+            className="w-16 h-16 bg-gradient-to-tr from-brand-600 to-brand-500 rounded-full flex items-center justify-center text-white shadow-[0_10px_25px_rgba(13,148,136,0.4)] border-4 border-background hover:scale-105 active:scale-95 transition-all"
+          >
+            <Camera className="w-7 h-7" />
+          </Link>
+        </div>
+
+        {/* Nav Item: Recompensas */}
+        <Link 
+          href="/rewards" 
+          className={`flex flex-col items-center gap-1 transition-colors ${pathname === "/rewards" ? "text-brand-600" : "text-muted-foreground hover:text-foreground"}`}
+        >
+          <Award className="w-6 h-6" />
+          <span className="text-[10px] font-medium">Premios</span>
+        </Link>
+
+      </nav>
+
     </div>
   );
 }
