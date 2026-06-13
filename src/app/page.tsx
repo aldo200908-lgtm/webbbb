@@ -54,15 +54,18 @@ export default function Home() {
     <main className="min-h-[100dvh] flex flex-col">
       {/* Editorial Hero Section */}
       <section className="relative w-full min-h-[90vh] md:min-h-[100dvh] flex flex-col items-center justify-center pt-24 pb-16 px-6 overflow-hidden">
-        {/* Background Image Layer */}
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=2400&auto=format&fit=crop" 
-            alt="Lago Titicaca" 
-            className="w-full h-full object-cover scale-105 animate-[pulse_20s_ease-in-out_infinite_alternate]"
+        {/* Background Video Layer */}
+        <div className="absolute inset-0 z-0 overflow-hidden bg-zinc-950">
+          <video 
+            src="https://res.cloudinary.com/dizesmfnk/video/upload/v1781320440/IMG_20260612_221311_261_osaxvz.mp4" 
+            autoPlay 
+            loop 
+            muted 
+            playsInline
+            className="w-full h-full object-cover scale-105 opacity-90"
           />
           {/* Overlay to ensure text readability (works on light and dark mode) */}
-          <div className="absolute inset-0 bg-background/80 dark:bg-background/90 backdrop-blur-[2px]"></div>
+          <div className="absolute inset-0 bg-background/70 dark:bg-background/80 backdrop-blur-[3px]"></div>
         </div>
 
         {/* Hero Content */}
