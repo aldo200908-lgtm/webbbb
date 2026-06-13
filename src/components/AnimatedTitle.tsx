@@ -36,7 +36,7 @@ export function AnimatedTitle() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="text-6xl md:text-8xl lg:text-[7rem] font-bold tracking-tighter leading-[1.05] text-balance text-foreground drop-shadow-2xl flex flex-col items-center gap-2"
+      className="text-5xl md:text-8xl lg:text-[7rem] font-bold tracking-tighter leading-[1.05] text-balance text-foreground drop-shadow-2xl flex flex-col items-center gap-2"
     >
       <span className="flex flex-wrap justify-center gap-[0.3em]">
         {line1.map((word, index) => (
