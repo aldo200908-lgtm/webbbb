@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Camera, MapPin, Award, ArrowRight } from "lucide-react";
 import { StickyStack } from "@/components/StickyStack";
+import { AnimatedTitle } from "@/components/AnimatedTitle";
 
 export default function Home() {
   const cards = [
@@ -63,9 +64,10 @@ export default function Home() {
             muted 
             playsInline
             className="w-full h-full object-cover scale-105 opacity-100"
+            style={{ filter: 'brightness(1.5) contrast(1.2)' }}
           />
           {/* Overlay to ensure text readability but keep video visible */}
-          <div className="absolute inset-0 bg-background/20 dark:bg-background/40"></div>
+          <div className="absolute inset-0 bg-background/10 dark:bg-background/20"></div>
           {/* Subtle gradient at the bottom to transition to the next section */}
           <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent"></div>
         </div>
@@ -80,10 +82,7 @@ export default function Home() {
             <span>Plataforma Ciudadana</span>
           </div>
           
-          <h1 className="text-6xl md:text-8xl lg:text-[7rem] font-bold tracking-tighter leading-[1.05] text-balance text-foreground drop-shadow-2xl">
-            El lago te necesita. <br />
-            <span className="text-brand-500 dark:text-brand-400 drop-shadow-md">Actúa hoy.</span>
-          </h1>
+          <AnimatedTitle />
           
           <p className="text-xl md:text-2xl text-foreground dark:text-zinc-100 max-w-[45ch] text-balance font-medium drop-shadow-xl">
             Reporta contaminación con una foto. Gana puntos por ayudar. Cámbialos por recompensas reales en Puno.
