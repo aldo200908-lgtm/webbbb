@@ -63,7 +63,7 @@ export default function Home() {
 
       <div className="relative z-10 mt-4">
         <Link
-          href="/report/new"
+          href="/dashboard"
           className="inline-flex items-center gap-3 px-8 py-4 bg-white dark:bg-zinc-900 text-zinc-950 dark:text-white rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-lg border border-zinc-200 dark:border-zinc-800"
         >
           <ArrowRight className="w-6 h-6" />
