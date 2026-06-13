@@ -3,7 +3,6 @@ import { Camera, MapPin, Award, ArrowRight } from "lucide-react";
 import { StickyStack } from "@/components/StickyStack";
 import { AnimatedTitle } from "@/components/AnimatedTitle";
 import { Marquee } from "@/components/Marquee";
-import { AnimatedTitle } from "@/components/AnimatedTitle";
 
 export default function Home() {
   const cards = [
