@@ -1,14 +1,25 @@
 import Link from "next/link";
 import { Camera, MapPin, Award, ArrowRight } from "lucide-react";
+import { motion } from "motion/react";
 
 export default function Home() {
   return (
     <main className="min-h-dvh flex flex-col items-center justify-center pt-24 pb-16 px-6">
       
       {/* Hero Section */}
-      <section className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12 lg:gap-24 mb-32">
+      <motion.section 
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12 lg:gap-24 mb-32"
+      >
         <div className="flex-1 space-y-8 text-center lg:text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 text-brand-600 text-sm font-medium">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 text-brand-600 text-sm font-medium"
+          >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-500 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
@@ -42,28 +53,54 @@ export default function Home() {
           </div>
         </div>
         
-        {/* Visual Asset (Placeholder for actual Lake image) */}
-        <div className="flex-1 w-full aspect-square md:aspect-video lg:aspect-square bg-muted rounded-3xl overflow-hidden relative border border-zinc-200">
-          {/* We'll use a placeholder image for now, but a real photo of the lake is recommended */}
+        {/* Visual Asset */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95, rotate: -2 }}
+          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+          transition={{ delay: 0.3, duration: 0.8, ease: "easeOut" }}
+          className="flex-1 w-full aspect-square md:aspect-video lg:aspect-square bg-muted rounded-3xl overflow-hidden relative border border-zinc-200"
+        >
           <img 
             src="https://images.unsplash.com/photo-1582239335474-061ff54af3a0?q=80&w=2000&auto=format&fit=crop" 
             alt="Vista del lago" 
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-1000 hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-        </div>
-      </section>
+        </motion.div>
+      </motion.section>
 
       {/* How it works Bento Grid */}
-      <section className="w-full max-w-7xl mx-auto space-y-12">
-        <div className="text-center space-y-4">
+      <motion.section 
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={{
+          visible: { transition: { staggerChildren: 0.15 } },
+          hidden: {}
+        }}
+        className="w-full max-w-7xl mx-auto space-y-12"
+      >
+        <motion.div 
+          variants={{
+            hidden: { opacity: 0, y: 20 },
+            visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+          }}
+          className="text-center space-y-4"
+        >
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight">¿Cómo funciona?</h2>
           <p className="text-muted-foreground">Tres pasos simples para hacer la diferencia.</p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Step 1 */}
-          <div className="bg-muted p-8 rounded-3xl flex flex-col gap-6">
+          <motion.div 
+            variants={{
+              hidden: { opacity: 0, y: 30 },
+              visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+            }}
+            whileHover={{ y: -5, transition: { duration: 0.2 } }}
+            className="bg-muted p-8 rounded-3xl flex flex-col gap-6"
+          >
             <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-sm text-foreground">
               <Camera className="w-6 h-6" />
             </div>
@@ -71,10 +108,17 @@ export default function Home() {
               <h3 className="text-xl font-semibold mb-2">1. Captura</h3>
               <p className="text-muted-foreground">Toma una foto clara del foco de contaminación usando la aplicación web. Asegúrate de mostrar el problema de forma evidente.</p>
             </div>
-          </div>
+          </motion.div>
           
           {/* Step 2 */}
-          <div className="bg-muted p-8 rounded-3xl flex flex-col gap-6">
+          <motion.div 
+            variants={{
+              hidden: { opacity: 0, y: 30 },
+              visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+            }}
+            whileHover={{ y: -5, transition: { duration: 0.2 } }}
+            className="bg-muted p-8 rounded-3xl flex flex-col gap-6"
+          >
             <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-sm text-foreground">
               <MapPin className="w-6 h-6" />
             </div>
@@ -82,10 +126,17 @@ export default function Home() {
               <h3 className="text-xl font-semibold mb-2">2. Localiza</h3>
               <p className="text-muted-foreground">La app registrará automáticamente las coordenadas GPS para que las autoridades y ONGs sepan exactamente dónde actuar.</p>
             </div>
-          </div>
+          </motion.div>
           
           {/* Step 3 */}
-          <div className="bg-muted p-8 rounded-3xl flex flex-col gap-6 md:col-span-3 lg:col-span-1 lg:row-span-2">
+          <motion.div 
+            variants={{
+              hidden: { opacity: 0, scale: 0.95 },
+              visible: { opacity: 1, scale: 1, transition: { duration: 0.6, ease: "easeOut" } }
+            }}
+            whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+            className="bg-muted p-8 rounded-3xl flex flex-col gap-6 md:col-span-3 lg:col-span-1 lg:row-span-2"
+          >
             <div className="w-12 h-12 rounded-2xl bg-brand-100 flex items-center justify-center shadow-sm text-brand-600">
               <Award className="w-6 h-6" />
             </div>
@@ -93,9 +144,9 @@ export default function Home() {
               <h3 className="text-xl font-semibold mb-2">3. Gana Recompensas</h3>
               <p className="text-muted-foreground">Por cada reporte verificado, acumularás puntos. Cámbialos por descuentos en tiendas locales, insignias o dona tus puntos a causas ambientales.</p>
             </div>
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
     </main>
   );

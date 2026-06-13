@@ -1,15 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Utensils, Ticket, HeartHandshake, Loader2, CheckCircle2 } from "lucide-react";
 import { useUserStore } from "@/store/useUserStore";
 import { doc, updateDoc, increment } from "firebase/firestore";
 import { db } from "@/lib/firebase/clientApp";
+import Image from "next/image";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { motion } from "motion/react";
 
 export default function RewardsPage() {
   const { user, setUser } = useUserStore();
   const [redeemingId, setRedeemingId] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    gsap.registerPlugin(ScrollTrigger);
+    const ctx = gsap.context(() => {
+      gsap.from(".reward-card", {
+        opacity: 0,
+        y: 40,
+        stagger: 0.15,
+        duration: 0.7,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: ".reward-grid",
+          start: "top 85%",
+        },
+      });
+    }, []);
+    return () => ctx.revert();
+  }, [user]);
 
   if (!user) return null;
   const userPoints = user.points;
@@ -76,20 +99,27 @@ export default function RewardsPage() {
       </header>
 
       {successMsg && (
-        <div className="mb-8 p-4 bg-green-50 text-green-700 border border-green-200 rounded-2xl flex items-center gap-3">
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8 p-4 bg-green-50 text-green-700 border border-green-200 rounded-2xl flex items-center gap-3"
+        >
           <CheckCircle2 className="w-5 h-5" />
           <p className="font-medium">{successMsg}</p>
-        </div>
+        </motion.div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="reward-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {catalog.map(item => {
           const canAfford = userPoints >= item.points;
           const isRedeeming = redeemingId === item.id;
           return (
-            <div key={item.id} className="flex flex-col bg-background border border-zinc-200 rounded-3xl overflow-hidden hover:shadow-lg transition-shadow">
+            <div 
+              key={item.id} 
+              className="reward-card flex flex-col bg-background border border-zinc-200 rounded-3xl overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+            >
               <div className="w-full aspect-video bg-zinc-100 relative">
-                <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                <Image src={item.image} alt={item.title} fill className="object-cover" />
                 <div className="absolute top-4 left-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm">
                   <div className={item.color}>{item.icon}</div>
                 </div>

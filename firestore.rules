@@ -1,0 +1,32 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Función para verificar si el usuario logueado es Administrador
+    function isAdmin() {
+      return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
+    }
+
+    // Reglas para la colección de usuarios
+    match /users/{userId} {
+      // Un usuario solo puede leer y actualizar su propio perfil. Los admins pueden ver a todos.
+      allow read, update: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      // Un usuario solo puede crearse a sí mismo.
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow delete: if false; // Por seguridad, nadie puede borrar usuarios.
+    }
+
+    // Reglas para la colección de reportes
+    match /reports/{reportId} {
+      // Un usuario puede ver reportes si están verificados, o si son los suyos propios.
+      // Los admins pueden ver todo (incluyendo los pendientes).
+      allow read: if request.auth != null && (resource.data.status == "verified" || resource.data.userId == request.auth.uid || isAdmin());
+      
+      // Cualquier usuario logueado puede crear un reporte a su nombre.
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      
+      // SOLO LOS ADMINS pueden actualizar o borrar un reporte (por ejemplo, para aprobarlo).
+      allow update, delete: if isAdmin();
+    }
+  }
+}

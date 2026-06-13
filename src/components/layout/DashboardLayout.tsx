@@ -5,6 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useUserStore } from "@/store/useUserStore";
 import { logout, signInWithGoogle } from "@/lib/firebase/authService";
 import { LayoutDashboard, Award, Shield, LogOut, Loader2, ArrowLeft } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useUserStore();
@@ -22,7 +24,12 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   if (!user) {
     return (
       <div className="min-h-dvh flex flex-col items-center justify-center bg-muted/30 p-6">
-        <div className="max-w-sm w-full bg-background p-8 rounded-3xl border border-zinc-200 text-center space-y-6 shadow-sm">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="max-w-sm w-full bg-background p-8 rounded-3xl border border-zinc-200 text-center space-y-6 shadow-sm"
+        >
           <Shield className="w-12 h-12 text-brand-600 mx-auto" />
           <div>
             <h1 className="text-2xl font-bold mb-2">Inicia Sesión</h1>
@@ -52,7 +59,12 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-dvh flex flex-col md:flex-row bg-muted/30">
       {/* Sidebar */}
-      <aside className="w-full md:w-64 bg-background border-r border-zinc-200 flex flex-col p-6 gap-8 shrink-0">
+      <motion.aside 
+        initial={{ x: -50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="w-full md:w-64 bg-background border-r border-zinc-200 flex flex-col p-6 gap-8 shrink-0 glass"
+      >
         <Link href="/" className="inline-flex items-center text-sm font-medium hover:text-brand-600 transition-colors">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Volver a Inicio
@@ -72,21 +84,29 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
+        <ThemeToggle />
+
         <nav className="flex-1 space-y-1">
-          {navItems.map((item) => {
+          {navItems.map((item, idx) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
             return (
-              <Link 
+              <motion.div
                 key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
-                  isActive ? "bg-brand-50 text-brand-700" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                }`}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 + idx * 0.05 }}
               >
-                <Icon className="w-5 h-5" />
-                {item.name}
-              </Link>
+                <Link 
+                  href={item.href}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+                    isActive ? "bg-brand-50 text-brand-700" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  <Icon className="w-5 h-5" />
+                  {item.name}
+                </Link>
+              </motion.div>
             )
           })}
         </nav>
@@ -101,13 +121,22 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           <LogOut className="w-5 h-5" />
           Cerrar Sesión
         </button>
-      </aside>
+      </motion.aside>
 
       {/* Main Content */}
       <main className="flex-1 p-6 md:p-10 overflow-y-auto h-dvh">
-        <div className="max-w-5xl mx-auto w-full">
-          {children}
-        </div>
+        <AnimatePresence mode="wait">
+          <motion.div 
+            key={pathname}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="max-w-5xl mx-auto w-full"
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
       </main>
     </div>
   );

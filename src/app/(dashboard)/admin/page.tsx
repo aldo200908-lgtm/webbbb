@@ -1,4 +1,5 @@
 "use client";
+import { motion, AnimatePresence } from "motion/react";
 
 import { useEffect, useState } from "react";
 import { useUserStore } from "@/store/useUserStore";
@@ -73,7 +74,12 @@ export default function AdminPage() {
   if (!user || user.role !== "admin") return null;
 
   return (
-    <div className="flex flex-col pb-12">
+    <motion.section
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="flex flex-col pb-12"
+    >
       <header className="mb-12">
         <h1 className="text-3xl font-bold tracking-tight">Panel de Administración</h1>
         <p className="text-muted-foreground mt-1">Revisa y valida los reportes ciudadanos entrantes.</p>
@@ -89,9 +95,25 @@ export default function AdminPage() {
             <p className="text-muted-foreground">No hay reportes pendientes de revisión.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {reports.map(report => (
-              <div key={report.id} className="flex flex-col bg-background rounded-3xl border border-zinc-200 overflow-hidden hover:shadow-sm transition-shadow">
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.15 } }
+            }}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+          >
+            {reports.map((report, idx) => (
+              <motion.div
+                key={report.id}
+                variants={{
+                  hidden: { opacity: 0, y: 30 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut", delay: idx * 0.1 } }
+                }}
+                whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                className="flex flex-col bg-background rounded-3xl border border-zinc-200 overflow-hidden hover:shadow-sm transition-shadow"
+              >
                 <div className="w-full aspect-video bg-zinc-100 relative">
                   <img src={report.photoUrl} alt="Reporte" className="w-full h-full object-cover" />
                 </div>
@@ -111,27 +133,31 @@ export default function AdminPage() {
                   </p>
                   
                   <div className="flex gap-3 mt-auto">
-                    <button 
+                    <motion.button 
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => handleAction(report.id, report.userId, "rejected")}
                       disabled={processingId === report.id}
                       className="flex-1 px-4 py-2.5 rounded-full font-medium text-sm border border-red-200 text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
                     >
                       Rechazar
-                    </button>
-                    <button 
+                    </motion.button>
+                    <motion.button 
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => handleAction(report.id, report.userId, "verified")}
                       disabled={processingId === report.id}
                       className="flex-1 px-4 py-2.5 rounded-full font-medium text-sm bg-foreground text-background hover:bg-zinc-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                       {processingId === report.id ? <Loader2 className="w-4 h-4 animate-spin" /> : "Aprobar (+50 pts)"}
-                    </button>
+                    </motion.button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
-    </div>
+    </motion.section>
   );
 }
