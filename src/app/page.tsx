@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Camera, MapPin, Award, ArrowRight, Smartphone, Download } from "lucide-react";
+import { Camera, MapPin, Award, ArrowRight, Smartphone } from "lucide-react";
 import { StickyStack } from "@/components/StickyStack";
 import { AnimatedTitle } from "@/components/AnimatedTitle";
 import { Marquee } from "@/components/Marquee";
@@ -55,17 +55,20 @@ export default function Home() {
       </div>
       
       <div className="space-y-6 max-w-3xl relative z-10">
-        <h3 className="text-5xl md:text-6xl font-bold tracking-tight">3. Descargar APK</h3>
+        <h3 className="text-5xl md:text-6xl font-bold tracking-tight">3. Denuncia</h3>
         <p className="text-xl md:text-2xl text-zinc-400 dark:text-zinc-600 font-medium leading-relaxed">
-          Lleva Titicaca Report siempre contigo. Descarga nuestra aplicación nativa para Android y reporta incidentes en tiempo real, estés donde estés.
+          Tu reporte con foto y ubicación queda registrado al instante. Las autoridades locales reciben la alerta y pueden coordinar la limpieza del área afectada.
         </p>
       </div>
 
       <div className="relative z-10 mt-4">
-        <button className="flex items-center gap-3 px-8 py-4 bg-white dark:bg-zinc-900 text-zinc-950 dark:text-white rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-lg border border-zinc-200 dark:border-zinc-800">
-          <Download className="w-6 h-6" />
-          Descargar para Android
-        </button>
+        <Link
+          href="/report/new"
+          className="inline-flex items-center gap-3 px-8 py-4 bg-white dark:bg-zinc-900 text-zinc-950 dark:text-white rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-lg border border-zinc-200 dark:border-zinc-800"
+        >
+          <ArrowRight className="w-6 h-6" />
+          Hacer un reporte
+        </Link>
       </div>
     </div>
   ];
