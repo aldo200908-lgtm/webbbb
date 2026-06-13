@@ -205,19 +205,28 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* Bottom Navigation Bar (Mobile Only) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-xl border-t border-zinc-200/50 z-50 px-8 py-3 flex items-center justify-between shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pb-safe">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-xl border-t border-zinc-200/50 z-50 px-4 py-3 flex items-center justify-between shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pb-safe">
         
-        {/* Nav Item: Panel */}
+        {/* Nav Item 1: Panel */}
         <Link 
           href="/dashboard" 
-          className={`flex flex-col items-center gap-1 transition-colors ${pathname === "/dashboard" ? "text-brand-600" : "text-muted-foreground hover:text-foreground"}`}
+          className={`flex flex-col items-center justify-center gap-1 w-14 transition-colors ${pathname === "/dashboard" ? "text-brand-600" : "text-muted-foreground hover:text-foreground"}`}
         >
           <LayoutDashboard className="w-6 h-6" />
           <span className="text-[10px] font-medium">Panel</span>
         </Link>
 
-        {/* Floating Action Button: Reportar */}
-        <div className="relative -top-8 flex justify-center">
+        {/* Nav Item 2: Comunidad / Chat */}
+        <Link 
+          href="/community" 
+          className={`flex flex-col items-center justify-center gap-1 w-14 transition-colors ${pathname === "/community" ? "text-brand-600" : "text-muted-foreground hover:text-foreground"}`}
+        >
+          <Users className="w-6 h-6" />
+          <span className="text-[10px] font-medium">Chat</span>
+        </Link>
+
+        {/* Floating Action Button 3: Reportar (Center) */}
+        <div className="relative -top-8 flex justify-center w-16">
           <Link 
             href="/report/new" 
             className="w-16 h-16 bg-gradient-to-tr from-brand-600 to-brand-500 rounded-full flex items-center justify-center text-white shadow-[0_10px_25px_rgba(13,148,136,0.4)] border-4 border-background hover:scale-105 active:scale-95 transition-all"
@@ -226,13 +235,22 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           </Link>
         </div>
 
-        {/* Nav Item: Recompensas */}
+        {/* Nav Item 4: Retirar Puntos / Premios */}
         <Link 
           href="/rewards" 
-          className={`flex flex-col items-center gap-1 transition-colors ${pathname === "/rewards" ? "text-brand-600" : "text-muted-foreground hover:text-foreground"}`}
+          className={`flex flex-col items-center justify-center gap-1 w-14 transition-colors ${pathname === "/rewards" ? "text-brand-600" : "text-muted-foreground hover:text-foreground"}`}
         >
           <Award className="w-6 h-6" />
           <span className="text-[10px] font-medium">Premios</span>
+        </Link>
+
+        {/* Nav Item 5: Perfil / Cuenta */}
+        <Link 
+          href="/profile" 
+          className={`flex flex-col items-center justify-center gap-1 w-14 transition-colors ${pathname === "/profile" ? "text-brand-600" : "text-muted-foreground hover:text-foreground"}`}
+        >
+          <User className="w-6 h-6" />
+          <span className="text-[10px] font-medium">Perfil</span>
         </Link>
 
       </nav>
