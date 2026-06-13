@@ -79,60 +79,53 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
         {/* Nuevo Reporte Card */}
-        <Link href="/report/new" className="group p-6 bg-brand-600 text-white rounded-3xl border border-brand-500 hover:-translate-y-2 transition-all duration-500 shadow-xl hover:shadow-brand-500/30 relative overflow-hidden flex flex-col justify-between h-56">
-          <div className="absolute inset-0 bg-noise opacity-[0.05] pointer-events-none mix-blend-overlay"></div>
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full blur-2xl pointer-events-none group-hover:scale-150 transition-transform duration-700"></div>
-          <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md group-hover:scale-110 transition-transform duration-300 relative z-10 border border-white/20">
-            <Camera className="w-7 h-7" />
+        <Link href="/report/new" className="group p-6 bg-white/70 dark:bg-zinc-950/70 backdrop-blur-xl text-zinc-900 dark:text-zinc-50 rounded-[2rem] border border-zinc-200/60 dark:border-zinc-800/60 hover:-translate-y-1 transition-all duration-500 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_4px_20px_rgb(0,0,0,0.2)] flex flex-col justify-between h-56 relative overflow-hidden">
+          <div className="w-14 h-14 bg-zinc-100 dark:bg-zinc-900 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300 relative z-10 border border-zinc-200/50 dark:border-zinc-800/50">
+            <Camera className="w-6 h-6 text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors" />
           </div>
           <div className="relative z-10">
-            <h3 className="text-2xl font-bold mb-1">Nuevo Reporte</h3>
-            <p className="text-brand-100 text-sm flex items-center font-medium">
-              Abrir cámara <ArrowRight className="w-4 h-4 ml-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all duration-300" />
+            <h3 className="text-xl font-bold mb-1 tracking-tight">Nuevo Reporte</h3>
+            <p className="text-zinc-500 dark:text-zinc-400 text-sm flex items-center font-medium">
+              Abrir cámara <ArrowRight className="w-4 h-4 ml-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
             </p>
           </div>
         </Link>
         
         {/* Recompensas Card */}
-        <Link href="/rewards" className="group p-6 liquid-glass-dark text-white rounded-3xl hover:-translate-y-2 transition-all duration-500 shadow-xl relative overflow-hidden flex flex-col justify-between h-56">
-          <div className="absolute inset-0 bg-noise opacity-[0.05] pointer-events-none mix-blend-overlay"></div>
-          <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-yellow-500/20 rounded-full blur-2xl pointer-events-none group-hover:bg-yellow-500/30 transition-colors duration-700"></div>
-          <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md group-hover:scale-110 transition-transform duration-300 relative z-10 border border-white/10">
-            <Gift className="w-7 h-7 text-yellow-400" />
+        <Link href="/rewards" className="group p-6 bg-white/70 dark:bg-zinc-950/70 backdrop-blur-xl text-zinc-900 dark:text-zinc-50 rounded-[2rem] border border-zinc-200/60 dark:border-zinc-800/60 hover:-translate-y-1 transition-all duration-500 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_4px_20px_rgb(0,0,0,0.2)] flex flex-col justify-between h-56 relative overflow-hidden">
+          <div className="w-14 h-14 bg-zinc-100 dark:bg-zinc-900 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300 relative z-10 border border-zinc-200/50 dark:border-zinc-800/50">
+            <Gift className="w-6 h-6 text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors" />
           </div>
           <div className="relative z-10">
-            <h3 className="text-2xl font-bold mb-1">Recompensas</h3>
-            <p className="text-zinc-400 text-sm flex items-center font-medium">
-              Catálogo de premios <ArrowRight className="w-4 h-4 ml-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all duration-300" />
+            <h3 className="text-xl font-bold mb-1 tracking-tight">Recompensas</h3>
+            <p className="text-zinc-500 dark:text-zinc-400 text-sm flex items-center font-medium">
+              Catálogo de premios <ArrowRight className="w-4 h-4 ml-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
             </p>
           </div>
         </Link>
 
         {/* Ver Mapa Card */}
-        <Link href="/map" className="group p-6 bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 rounded-3xl border border-zinc-200 dark:border-zinc-800 hover:-translate-y-2 transition-all duration-500 shadow-xl relative overflow-hidden flex flex-col justify-between h-56">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none group-hover:scale-150 transition-transform duration-700"></div>
-          <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center backdrop-blur-md group-hover:scale-110 transition-transform duration-300 relative z-10 border border-blue-200 dark:border-blue-800">
-            <MapPin className="w-7 h-7 text-blue-600 dark:text-blue-400" />
+        <Link href="/map" className="group p-6 bg-white/70 dark:bg-zinc-950/70 backdrop-blur-xl text-zinc-900 dark:text-zinc-50 rounded-[2rem] border border-zinc-200/60 dark:border-zinc-800/60 hover:-translate-y-1 transition-all duration-500 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_4px_20px_rgb(0,0,0,0.2)] flex flex-col justify-between h-56 relative overflow-hidden">
+          <div className="w-14 h-14 bg-zinc-100 dark:bg-zinc-900 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300 relative z-10 border border-zinc-200/50 dark:border-zinc-800/50">
+            <MapPin className="w-6 h-6 text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors" />
           </div>
           <div className="relative z-10">
-            <h3 className="text-2xl font-bold mb-1">Ver Mapa</h3>
+            <h3 className="text-xl font-bold mb-1 tracking-tight">Ver Mapa</h3>
             <p className="text-zinc-500 dark:text-zinc-400 text-sm flex items-center font-medium">
-              Explorar focos <ArrowRight className="w-4 h-4 ml-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all duration-300" />
+              Explorar focos <ArrowRight className="w-4 h-4 ml-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
             </p>
           </div>
         </Link>
 
         {/* Comunidad Card */}
-        <Link href="/community" className="group p-6 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-3xl hover:-translate-y-2 transition-all duration-500 shadow-xl hover:shadow-purple-500/30 relative overflow-hidden flex flex-col justify-between h-56">
-          <div className="absolute inset-0 bg-noise opacity-[0.05] pointer-events-none mix-blend-overlay"></div>
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full blur-2xl pointer-events-none group-hover:scale-150 transition-transform duration-700"></div>
-          <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md group-hover:scale-110 transition-transform duration-300 relative z-10 border border-white/20">
-            <Users className="w-7 h-7 text-white" />
+        <Link href="/community" className="group p-6 bg-white/70 dark:bg-zinc-950/70 backdrop-blur-xl text-zinc-900 dark:text-zinc-50 rounded-[2rem] border border-zinc-200/60 dark:border-zinc-800/60 hover:-translate-y-1 transition-all duration-500 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_4px_20px_rgb(0,0,0,0.2)] flex flex-col justify-between h-56 relative overflow-hidden">
+          <div className="w-14 h-14 bg-zinc-100 dark:bg-zinc-900 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300 relative z-10 border border-zinc-200/50 dark:border-zinc-800/50">
+            <Users className="w-6 h-6 text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors" />
           </div>
           <div className="relative z-10">
-            <h3 className="text-2xl font-bold mb-1">Comunidad</h3>
-            <p className="text-indigo-100 text-sm flex items-center font-medium">
-              Ver ciudadanos <ArrowRight className="w-4 h-4 ml-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all duration-300" />
+            <h3 className="text-xl font-bold mb-1 tracking-tight">Comunidad</h3>
+            <p className="text-zinc-500 dark:text-zinc-400 text-sm flex items-center font-medium">
+              Ver ciudadanos <ArrowRight className="w-4 h-4 ml-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
             </p>
           </div>
         </Link>
