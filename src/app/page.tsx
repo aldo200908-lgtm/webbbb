@@ -62,15 +62,17 @@ export default function Home() {
             loop 
             muted 
             playsInline
-            className="w-full h-full object-cover scale-105 opacity-90"
+            className="w-full h-full object-cover scale-105 opacity-100"
           />
-          {/* Overlay to ensure text readability (works on light and dark mode) */}
-          <div className="absolute inset-0 bg-background/70 dark:bg-background/80 backdrop-blur-[3px]"></div>
+          {/* Overlay to ensure text readability but keep video visible */}
+          <div className="absolute inset-0 bg-background/20 dark:bg-background/40"></div>
+          {/* Subtle gradient at the bottom to transition to the next section */}
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent"></div>
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 w-full max-w-5xl mx-auto flex flex-col items-center text-center space-y-10">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full liquid-glass text-sm font-medium tracking-wide uppercase">
+        <div className="relative z-10 w-full max-w-5xl mx-auto flex flex-col items-center text-center space-y-10 drop-shadow-lg">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full liquid-glass text-sm font-medium tracking-wide uppercase shadow-lg">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-500 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
@@ -78,12 +80,12 @@ export default function Home() {
             <span>Plataforma Ciudadana</span>
           </div>
           
-          <h1 className="text-6xl md:text-8xl lg:text-[7rem] font-bold tracking-tighter leading-[1.05] text-balance text-foreground">
+          <h1 className="text-6xl md:text-8xl lg:text-[7rem] font-bold tracking-tighter leading-[1.05] text-balance text-foreground drop-shadow-2xl">
             El lago te necesita. <br />
-            <span className="text-brand-600">Actúa hoy.</span>
+            <span className="text-brand-500 dark:text-brand-400 drop-shadow-md">Actúa hoy.</span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-[45ch] text-balance font-light">
+          <p className="text-xl md:text-2xl text-foreground dark:text-zinc-100 max-w-[45ch] text-balance font-medium drop-shadow-xl">
             Reporta contaminación con una foto. Gana puntos por ayudar. Cámbialos por recompensas reales en Puno.
           </p>
           
