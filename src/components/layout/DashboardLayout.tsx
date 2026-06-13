@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useUserStore } from "@/store/useUserStore";
 import { logout, signInWithGoogle } from "@/lib/firebase/authService";
-import { LayoutDashboard, Award, Shield, LogOut, Loader2, ArrowLeft, User, Camera } from "lucide-react";
+import { LayoutDashboard, Award, Shield, LogOut, Loader2, ArrowLeft, User, Camera, Users } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import ThemeToggle from "@/components/ThemeToggle";
 
