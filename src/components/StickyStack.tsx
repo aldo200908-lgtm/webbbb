@@ -33,10 +33,13 @@ export function StickyStack({ cards }: { cards: React.ReactNode[] }) {
           pinSpacing: false,
         });
 
-        // Shrink the current card as the NEXT card scrolls up
+        // Shrink the current card, blur it, and rotate it back in 3D
         gsap.to(card, {
-          scale: 0.95,
-          opacity: 0.6,
+          scale: 0.85,
+          opacity: 0.2,
+          rotationX: -10,
+          y: -20,
+          filter: "blur(12px)",
           ease: "none",
           scrollTrigger: {
             trigger: cardEls[i + 1],
@@ -52,11 +55,12 @@ export function StickyStack({ cards }: { cards: React.ReactNode[] }) {
   }, [reduce]);
 
   return (
-    <div ref={ref} className="relative w-full">
+    <div ref={ref} className="relative w-full" style={{ perspective: "1500px" }}>
       {cards.map((card, i) => (
         <div
           key={i}
-          className="stack-card sticky top-[100px] flex items-center justify-center mb-12 last:mb-0"
+          className="stack-card sticky top-[100px] flex items-center justify-center mb-24 md:mb-32 last:mb-0 transform-gpu"
+          style={{ transformOrigin: "top center", willChange: "transform, filter, opacity" }}
         >
           {card}
         </div>
