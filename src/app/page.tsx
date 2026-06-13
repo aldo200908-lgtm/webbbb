@@ -120,10 +120,10 @@ export default function Home() {
               </span>
             </Link>
             <Link 
-              href="/rewards" 
+              href="https://www.mediafire.com" 
               className="inline-flex items-center justify-center w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 liquid-glass text-foreground font-semibold rounded-full hover:bg-white/10 transition-colors text-lg"
             >
-              Ver recompensas
+              Descargar APK
             </Link>
           </div>
         </div>
