@@ -1,9 +1,9 @@
 "use client";
 import Head from 'next/head';
-import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 export default function MetaHead() {
-  const { pathname } = useRouter();
+  const pathname = usePathname() || '/';
   const titleMap: Record<string, string> = {
     '/': 'Titicaca Report – Inicio',
     '/dashboard': 'Panel de Usuario',
