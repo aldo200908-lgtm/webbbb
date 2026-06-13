@@ -164,7 +164,7 @@ export default function Home() {
           
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center w-full sm:w-auto gap-4 pt-8">
             <Link 
-              href="/report/new" 
+              href="/dashboard" 
               className="group relative inline-flex items-center justify-center w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 bg-foreground text-background font-semibold rounded-full overflow-hidden hover:scale-[0.98] transition-transform active:scale-95 shadow-xl"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

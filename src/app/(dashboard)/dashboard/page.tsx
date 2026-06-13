@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Award, MapPin, CheckCircle2, Clock } from "lucide-react";
+import { Award, MapPin, CheckCircle2, Clock, Camera, Gift, Users, ArrowRight } from "lucide-react";
 import { useUserStore } from "@/store/useUserStore";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase/clientApp";
@@ -77,14 +77,60 @@ export default function DashboardPage() {
         </div>
       </header>
 
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+        <Link href="/report/new" className="group p-6 bg-brand-600 text-white rounded-3xl border border-brand-500 hover:-translate-y-1 transition-all shadow-lg hover:shadow-brand-500/20 relative overflow-hidden flex flex-col justify-between h-48">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+          <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform">
+            <Camera className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold mb-1">Nuevo Reporte</h3>
+            <p className="text-brand-100 text-sm flex items-center">
+              Iniciar cámara <ArrowRight className="w-4 h-4 ml-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+            </p>
+          </div>
+        </Link>
+        
+        <Link href="/rewards" className="group p-6 bg-zinc-900 text-white rounded-3xl border border-zinc-800 hover:-translate-y-1 transition-all shadow-lg relative overflow-hidden flex flex-col justify-between h-48">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/10 rounded-full blur-2xl pointer-events-none"></div>
+          <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform">
+            <Gift className="w-6 h-6 text-brand-400" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold mb-1">Recompensas</h3>
+            <p className="text-zinc-400 text-sm flex items-center">
+              Canjear puntos <ArrowRight className="w-4 h-4 ml-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+            </p>
+          </div>
+        </Link>
+
+        <div className="group p-6 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden flex flex-col justify-between h-48 opacity-60 cursor-not-allowed">
+          <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-900 rounded-2xl flex items-center justify-center">
+            <MapPin className="w-6 h-6 text-zinc-400" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold mb-1">Ver Mapa</h3>
+            <p className="text-zinc-500 text-sm">Próximamente</p>
+          </div>
+        </div>
+
+        <div className="group p-6 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden flex flex-col justify-between h-48 opacity-60 cursor-not-allowed">
+          <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-900 rounded-2xl flex items-center justify-center">
+            <Users className="w-6 h-6 text-zinc-400" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold mb-1">Comunidad</h3>
+            <p className="text-zinc-500 text-sm">Próximamente</p>
+          </div>
+        </div>
+      </div>
+
       <div className="flex flex-col md:flex-row gap-8">
         <div className="flex-1 space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold">Mis Reportes</h2>
-            <Link href="/report/new" className="text-sm font-medium text-brand-600 hover:underline">
-              + Nuevo reporte
-            </Link>
+          <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-4">
+            <h2 className="text-xl font-bold">Mis Reportes Anteriores</h2>
           </div>
+
           
           <div className="grid gap-4">
             {loading ? (
