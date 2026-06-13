@@ -9,6 +9,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const unsubscribe = subscribeToAuthChanges((profile) => {
+      const { isDemoMode } = useUserStore.getState();
+      if (isDemoMode) return;
       setUser(profile);
       setLoading(false);
     });

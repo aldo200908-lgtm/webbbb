@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useUserStore } from "@/store/useUserStore";
 import { logout, signInWithGoogle } from "@/lib/firebase/authService";
-import { LayoutDashboard, Award, Shield, LogOut, Loader2, ArrowLeft } from "lucide-react";
+import { LayoutDashboard, Award, Shield, LogOut, Loader2, ArrowLeft, User } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -22,6 +22,19 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   }
 
   if (!user) {
+    const handleDemoLogin = () => {
+      useUserStore.getState().setDemoMode(true);
+      useUserStore.getState().setUser({
+        uid: "demo-user-123",
+        email: "demo@titicacareport.com",
+        displayName: "Visitante Demo",
+        photoURL: "https://api.dicebear.com/7.x/avataaars/svg?seed=Demo",
+        role: "user",
+        points: 500,
+      });
+      useUserStore.getState().setLoading(false);
+    };
+
     return (
       <div className="min-h-dvh flex flex-col items-center justify-center bg-muted/30 p-6">
         <motion.div 
@@ -42,7 +55,22 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />
             Continuar con Google
           </button>
-          <Link href="/" className="inline-block text-sm text-muted-foreground hover:text-foreground">
+          
+          <div className="relative flex py-2 items-center">
+            <div className="flex-grow border-t border-zinc-200"></div>
+            <span className="flex-shrink-0 mx-4 text-muted-foreground text-xs uppercase tracking-wider">O prueba sin cuenta</span>
+            <div className="flex-grow border-t border-zinc-200"></div>
+          </div>
+
+          <button 
+            onClick={handleDemoLogin}
+            className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-brand-50 text-brand-700 font-medium rounded-full hover:bg-brand-100 transition-colors border border-brand-200"
+          >
+            <User className="w-5 h-5" />
+            Entrar como Demo
+          </button>
+
+          <Link href="/" className="inline-block text-sm text-muted-foreground hover:text-foreground mt-4">
             Volver al inicio
           </Link>
         </motion.div>
@@ -113,7 +141,12 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
         <button 
           onClick={async () => {
-            await logout();
+            if (useUserStore.getState().isDemoMode) {
+              useUserStore.getState().setDemoMode(false);
+              useUserStore.getState().setUser(null);
+            } else {
+              await logout();
+            }
             router.push("/");
           }}
           className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 rounded-xl transition-colors mt-auto"
