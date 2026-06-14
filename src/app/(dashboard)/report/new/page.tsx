@@ -87,8 +87,8 @@ export default function NewReportPage() {
       }, (progress) => {
         setUploadProgress(progress);
       });
-      // Redirect to a success page or map
-      router.push("/map");
+      // Redirect to dashboard where they can see their points and new report
+      router.push("/dashboard");
     } catch (err: any) {
       console.error(err);
       if (err.code === "storage/unauthorized" || err.message?.includes("permission") || err.message?.includes("Missing or insufficient permissions")) {
