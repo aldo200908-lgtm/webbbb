@@ -8,22 +8,29 @@ export function AnimatedTitle() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.2,
+        staggerChildren: 0.1,
+        delayChildren: 0.1,
       },
     },
   };
 
   const wordVariants = {
-    hidden: { opacity: 0, y: 50, filter: "blur(10px)" },
+    hidden: { 
+      opacity: 0, 
+      y: "100%", 
+      rotateX: -40,
+      filter: "blur(10px)" 
+    },
     visible: {
       opacity: 1,
-      y: 0,
+      y: "0%",
+      rotateX: 0,
       filter: "blur(0px)",
       transition: {
         type: "spring" as const,
-        stiffness: 100,
-        damping: 20,
+        stiffness: 120,
+        damping: 18,
+        mass: 1.2
       },
     },
   };
@@ -36,20 +43,24 @@ export function AnimatedTitle() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="text-5xl md:text-8xl lg:text-[7rem] font-bold tracking-tighter leading-[1.05] text-balance text-foreground drop-shadow-2xl flex flex-col items-center gap-2"
+      className="text-6xl md:text-8xl lg:text-[7.5rem] font-bold tracking-tighter leading-[1.05] text-balance text-foreground drop-shadow-2xl flex flex-col items-center gap-2 md:gap-4 perspective-1000"
     >
-      <span className="flex flex-wrap justify-center gap-[0.3em]">
+      <span className="flex flex-wrap justify-center gap-[0.3em] pb-2">
         {line1.map((word, index) => (
-          <motion.span key={index} variants={wordVariants} className="inline-block">
-            {word}
-          </motion.span>
+          <span key={index} className="overflow-hidden inline-block pb-2 -mb-2">
+            <motion.span variants={wordVariants} className="inline-block transform-origin-bottom">
+              {word}
+            </motion.span>
+          </span>
         ))}
       </span>
-      <span className="flex flex-wrap justify-center gap-[0.3em] text-brand-500 dark:text-brand-400 drop-shadow-md">
+      <span className="flex flex-wrap justify-center gap-[0.3em] text-transparent bg-clip-text bg-gradient-to-br from-zinc-800 to-zinc-500 dark:from-white dark:to-zinc-500 pb-2">
         {line2.map((word, index) => (
-          <motion.span key={index} variants={wordVariants} className="inline-block">
-            {word}
-          </motion.span>
+          <span key={index} className="overflow-hidden inline-block pb-2 -mb-2">
+            <motion.span variants={wordVariants} className="inline-block transform-origin-bottom">
+              {word}
+            </motion.span>
+          </span>
         ))}
       </span>
     </motion.h1>

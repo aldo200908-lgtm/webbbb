@@ -1,10 +1,61 @@
+"use client";
+
 import Link from "next/link";
-import { Camera, MapPin, Award, ArrowRight, Smartphone } from "lucide-react";
+import { Camera, MapPin, Award, ArrowRight, Smartphone, Download } from "lucide-react";
 import { StickyStack } from "@/components/StickyStack";
 import { AnimatedTitle } from "@/components/AnimatedTitle";
 import { Marquee } from "@/components/Marquee";
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export default function Home() {
+  const heroRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const btnRef = useRef<HTMLAnchorElement>(null);
+
+  useEffect(() => {
+    // 1. Cinematic Video Reveal
+    gsap.fromTo(
+      videoRef.current,
+      { scale: 1.3, filter: "brightness(0.5) contrast(1.2)" },
+      { scale: 1.05, filter: "brightness(1.5) contrast(1.2)", duration: 2.5, ease: "power3.out" }
+    );
+
+    // 2. Scroll 3D Effect (Fade & Blur Title, Shrink Video)
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: heroRef.current,
+        start: "top top",
+        end: "bottom top",
+        scrub: 1,
+      }
+    });
+
+    tl.to(contentRef.current, { y: -100, opacity: 0, filter: "blur(10px)", scale: 0.95 })
+      .to(videoRef.current, { scale: 1, y: 100 }, 0);
+
+  }, []);
+
+  // Magnetic Button Effect
+  const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const btn = btnRef.current;
+    if (!btn) return;
+    const rect = btn.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    gsap.to(btn, { x: x * 0.3, y: y * 0.3, duration: 0.3, ease: "power2.out" });
+  };
+
+  const handleMouseLeave = () => {
+    gsap.to(btnRef.current, { x: 0, y: 0, duration: 0.7, ease: "elastic.out(1, 0.3)" });
+  };
+
   const cards = [
     <div key="card-1" className="w-full max-w-5xl bg-white/70 dark:bg-zinc-950/70 backdrop-blur-2xl text-zinc-900 dark:text-zinc-50 border border-zinc-200/50 dark:border-zinc-800/50 rounded-[2.5rem] p-6 md:p-12 flex flex-col md:flex-row items-stretch gap-6 md:gap-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] group transition-all duration-700 relative overflow-hidden">
       
@@ -76,17 +127,17 @@ export default function Home() {
   return (
     <main className="min-h-[100dvh] flex flex-col">
       {/* Editorial Hero Section */}
-      <section className="relative w-full min-h-[90vh] md:min-h-[100dvh] flex flex-col items-center justify-center pt-24 pb-16 px-6 overflow-hidden">
+      <section ref={heroRef} className="relative w-full min-h-[90vh] md:min-h-[100dvh] flex flex-col items-center justify-center pt-24 pb-16 px-6 overflow-hidden perspective-1000">
         {/* Background Video Layer */}
         <div className="absolute inset-0 z-0 overflow-hidden bg-zinc-950">
           <video 
+            ref={videoRef}
             src="https://res.cloudinary.com/dizesmfnk/video/upload/v1781320440/IMG_20260612_221311_261_osaxvz.mp4" 
             autoPlay 
             loop 
             muted 
             playsInline
-            className="w-full h-full object-cover scale-105 opacity-100"
-            style={{ filter: 'brightness(1.5) contrast(1.2)' }}
+            className="w-full h-full object-cover origin-center"
           />
           {/* Overlay to ensure text readability but keep video visible */}
           <div className="absolute inset-0 bg-background/20 dark:bg-background/40"></div>
@@ -96,7 +147,7 @@ export default function Home() {
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 w-full max-w-5xl mx-auto flex flex-col items-center text-center space-y-10 drop-shadow-lg">
+        <div ref={contentRef} className="relative z-10 w-full max-w-5xl mx-auto flex flex-col items-center text-center space-y-10 drop-shadow-lg">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full liquid-glass text-sm font-medium tracking-wide uppercase shadow-lg">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-500 opacity-75"></span>
@@ -111,10 +162,13 @@ export default function Home() {
             Reporta contaminación con una foto. Gana puntos por ayudar. Cámbialos por recompensas reales en Puno.
           </p>
           
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center w-full sm:w-auto gap-4 pt-8">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center w-full sm:w-auto gap-4 pt-8 perspective-500">
             <Link 
+              ref={btnRef}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
               href="/dashboard" 
-              className="group relative inline-flex items-center justify-center w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 bg-foreground text-background font-semibold rounded-full overflow-hidden hover:scale-[0.98] transition-transform active:scale-95 shadow-xl"
+              className="group relative inline-flex items-center justify-center w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 bg-foreground text-background font-semibold rounded-full overflow-hidden shadow-2xl transition-shadow hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] dark:hover:shadow-[0_0_40px_rgba(255,255,255,0.1)] z-20"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <span className="relative z-10 flex items-center text-lg group-hover:text-white transition-colors">
@@ -126,6 +180,7 @@ export default function Home() {
               href="https://www.mediafire.com" 
               className="inline-flex items-center justify-center w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 liquid-glass text-foreground font-semibold rounded-full hover:bg-white/10 transition-colors text-lg"
             >
+              <Download className="w-5 h-5 mr-2" />
               Descargar APK
             </Link>
           </div>
