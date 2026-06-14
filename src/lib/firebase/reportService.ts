@@ -1,5 +1,6 @@
 import { db, storage } from "./clientApp";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, query, orderBy, limit, getDocs } from "firebase/firestore";
+import { areHashesTooSimilar } from "../verification/aiVerification";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 export interface ReportData {
@@ -8,6 +9,7 @@ export interface ReportData {
   latitude: number | null;
   longitude: number | null;
   imageUrl: string;
+  imageHash: string;
   status: string;
   createdAt: any;
 }
@@ -48,8 +50,24 @@ const compressImageToBase64 = async (file: File): Promise<string> => {
   });
 };
 
+export async function checkForDuplicateHash(newHash: string): Promise<boolean> {
+  // Check the last 50 reports for duplicates
+  const q = query(collection(db, "reports"), orderBy("createdAt", "desc"), limit(50));
+  const querySnapshot = await getDocs(q);
+  
+  for (const doc of querySnapshot.docs) {
+    const data = doc.data();
+    if (data.imageHash) {
+      if (areHashesTooSimilar(newHash, data.imageHash, 5)) {
+        return true; // Es duplicado
+      }
+    }
+  }
+  return false;
+}
+
 export async function submitReport(
-  data: { file: File, description: string, lat: number | null, lng: number | null, userId: string },
+  data: { file: File, description: string, lat: number | null, lng: number | null, userId: string, imageHash: string },
   onProgress?: (progress: number) => void
 ) {
   try {
@@ -78,6 +96,7 @@ export async function submitReport(
       latitude: data.lat,
       longitude: data.lng,
       imageUrl: base64Image, // Guardamos la imagen completa como texto!
+      imageHash: data.imageHash,
       status: 'pending', // 'pending', 'verified', 'cleaned'
       createdAt: serverTimestamp(),
     };

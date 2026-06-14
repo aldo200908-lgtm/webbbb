@@ -3,8 +3,28 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/useUserStore";
-import { submitReport } from "@/lib/firebase/reportService";
-import { Camera, MapPin, Upload, X, Loader2, Image as ImageIcon, Send } from "lucide-react";
+import { submitReport, checkForDuplicateHash } from "@/lib/firebase/reportService";
+import { Camera, MapPin, Upload, X, Loader2, Image as ImageIcon, Send, CheckCircle2, XCircle, Terminal } from "lucide-react";
+import { verifyGarbage, verifyLocation, verifyTime, generateImageHash, verifyAuthenticity } from "@/lib/verification/aiVerification";
+
+// Helper
+const loadImage = (file: File): Promise<HTMLImageElement> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = URL.createObjectURL(file);
+    img.onload = () => resolve(img);
+    img.onerror = (e) => reject(e);
+  });
+};
+
+type VerificationStep = 'idle' | 'loading' | 'success' | 'error';
+interface VerificationState {
+  garbage: VerificationStep;
+  location: VerificationStep;
+  time: VerificationStep;
+  duplicate: VerificationStep;
+  authenticity: VerificationStep;
+}
 
 export default function NewReportPage() {
   const { user } = useUserStore();
@@ -18,6 +38,17 @@ export default function NewReportPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
+
+  // Verification State
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verificationError, setVerificationError] = useState<string | null>(null);
+  const [verificationStatus, setVerificationStatus] = useState<VerificationState>({
+    garbage: 'idle',
+    location: 'idle',
+    time: 'idle',
+    duplicate: 'idle',
+    authenticity: 'idle'
+  });
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -61,43 +92,92 @@ export default function NewReportPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) {
-      setError("Debes iniciar sesión para reportar.");
-      return;
-    }
-    if (!file) {
-      setError("Debes subir una foto del lugar.");
-      return;
-    }
-    if (!location) {
-      setError("Debes compartir la ubicación GPS.");
-      return;
-    }
+    if (!user || !file || !location) return;
 
+    setIsVerifying(true);
     setIsSubmitting(true);
-    setError(null);
+    setVerificationError(null);
+    setVerificationStatus({
+      garbage: 'idle', location: 'idle', time: 'idle', duplicate: 'idle', authenticity: 'idle'
+    });
 
     try {
+      const imgElement = await loadImage(file);
+
+      // 1. Verificación de Tiempo
+      setVerificationStatus(s => ({ ...s, time: 'loading' }));
+      const isTimeValid = verifyTime(file);
+      if (!isTimeValid) {
+        setVerificationStatus(s => ({ ...s, time: 'error' }));
+        throw new Error("La foto es antigua o no fue tomada en este momento. Por favor toma una foto en vivo.");
+      }
+      setVerificationStatus(s => ({ ...s, time: 'success' }));
+
+      // 2. Verificación de Autenticidad (Pantallas)
+      setVerificationStatus(s => ({ ...s, authenticity: 'loading' }));
+      const isAuthentic = verifyAuthenticity(imgElement);
+      if (!isAuthentic) {
+        setVerificationStatus(s => ({ ...s, authenticity: 'error' }));
+        throw new Error("La foto parece haber sido tomada de una pantalla (fraude).");
+      }
+      setVerificationStatus(s => ({ ...s, authenticity: 'success' }));
+
+      // 3. Verificación de Ubicación (Titicaca)
+      setVerificationStatus(s => ({ ...s, location: 'loading' }));
+      const isLocationValid = verifyLocation(location.lat, location.lng);
+      if (!isLocationValid) {
+        setVerificationStatus(s => ({ ...s, location: 'error' }));
+        throw new Error("Estás fuera de la zona permitida (Lago Titicaca / Puno).");
+      }
+      setVerificationStatus(s => ({ ...s, location: 'success' }));
+
+      // 4. Detección de Basura (TensorFlow)
+      setVerificationStatus(s => ({ ...s, garbage: 'loading' }));
+      const isGarbage = await verifyGarbage(imgElement);
+      if (!isGarbage) {
+        setVerificationStatus(s => ({ ...s, garbage: 'error' }));
+        throw new Error("La IA no detectó basura (plásticos, botellas, residuos) con confianza suficiente.");
+      }
+      setVerificationStatus(s => ({ ...s, garbage: 'success' }));
+
+      // 5. Detección de Duplicados
+      setVerificationStatus(s => ({ ...s, duplicate: 'loading' }));
+      const imgHash = generateImageHash(imgElement);
+      const isDuplicate = await checkForDuplicateHash(imgHash);
+      if (isDuplicate) {
+        setVerificationStatus(s => ({ ...s, duplicate: 'error' }));
+        throw new Error("Esta imagen (o una muy similar) ya fue reportada anteriormente.");
+      }
+      setVerificationStatus(s => ({ ...s, duplicate: 'success' }));
+
+      // === TODAS LAS VALIDACIONES PASARON ===
+      setIsVerifying(false);
+
       await submitReport({
         file,
         description,
         lat: location.lat,
         lng: location.lng,
-        userId: user.uid
+        userId: user.uid,
+        imageHash: imgHash
       }, (progress) => {
         setUploadProgress(progress);
       });
-      // Redirect to dashboard where they can see their points and new report
+      
       router.push("/dashboard");
     } catch (err: any) {
       console.error(err);
-      if (err.code === "storage/unauthorized" || err.message?.includes("permission") || err.message?.includes("Missing or insufficient permissions")) {
-        setError("Error de permisos: Asegúrate de haber habilitado 'Storage' y 'Firestore' en Firebase Console, y que sus reglas permitan escritura.");
-      } else {
-        setError("Ocurrió un error al enviar el reporte. Verifica tu conexión a internet o intenta de nuevo.");
-      }
+      setVerificationError(err.message || "Fallo en la validación local.");
       setIsSubmitting(false);
+      // We keep isVerifying true so they can see the terminal results
     }
+  };
+
+  const renderStatusIcon = (status: VerificationStep) => {
+    if (status === 'loading') return <Loader2 className="w-4 h-4 animate-spin text-blue-500" />;
+    if (status === 'success') return <CheckCircle2 className="w-4 h-4 text-green-500" />;
+    if (status === 'error') return <XCircle className="w-4 h-4 text-red-500" />;
+    return <div className="w-4 h-4 rounded-full border-2 border-zinc-300 dark:border-zinc-700" />;
   };
 
   return (
@@ -112,9 +192,58 @@ export default function NewReportPage() {
           <p className="text-zinc-500 dark:text-zinc-400 mt-2">Ayúdanos a identificar focos de contaminación en Puno.</p>
         </div>
 
-        {error && (
+        {error && !isVerifying && (
           <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl text-sm font-medium border border-red-200 dark:border-red-900/50">
             {error}
+          </div>
+        )}
+
+        {isVerifying && (
+          <div className="mb-8 p-6 bg-zinc-900 text-green-400 font-mono text-sm rounded-2xl shadow-inner border border-zinc-800">
+            <div className="flex items-center gap-2 text-white mb-4 border-b border-zinc-800 pb-2">
+              <Terminal className="w-5 h-5" />
+              <span>Terminal de IA Local</span>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                {renderStatusIcon(verificationStatus.time)}
+                <span className={verificationStatus.time === 'error' ? 'text-red-400' : ''}>[1/5] 🕒 Verificando tiempo (En vivo)...</span>
+              </div>
+              <div className="flex items-center gap-3">
+                {renderStatusIcon(verificationStatus.authenticity)}
+                <span className={verificationStatus.authenticity === 'error' ? 'text-red-400' : ''}>[2/5] 🖥️ Verificando autenticidad (Anti-pantallas)...</span>
+              </div>
+              <div className="flex items-center gap-3">
+                {renderStatusIcon(verificationStatus.location)}
+                <span className={verificationStatus.location === 'error' ? 'text-red-400' : ''}>[3/5] 📍 Verificando ubicación (Polígono Titicaca)...</span>
+              </div>
+              <div className="flex items-center gap-3">
+                {renderStatusIcon(verificationStatus.garbage)}
+                <span className={verificationStatus.garbage === 'error' ? 'text-red-400' : ''}>[4/5] 🗑️ Analizando imagen (TensorFlow.js)...</span>
+              </div>
+              <div className="flex items-center gap-3">
+                {renderStatusIcon(verificationStatus.duplicate)}
+                <span className={verificationStatus.duplicate === 'error' ? 'text-red-400' : ''}>[5/5] 🔍 Verificando duplicados (dHash)...</span>
+              </div>
+            </div>
+
+            {verificationError && (
+              <div className="mt-4 pt-4 border-t border-zinc-800 text-red-400 flex flex-col gap-2">
+                <span className="font-bold text-red-500">❌ REPORTE RECHAZADO:</span>
+                <span>{verificationError}</span>
+                <button 
+                  onClick={() => { setIsVerifying(false); setVerificationError(null); }}
+                  className="mt-2 w-full p-2 bg-red-950 hover:bg-red-900 text-white rounded-lg transition-colors border border-red-800"
+                >
+                  Entendido. Volver a intentar.
+                </button>
+              </div>
+            )}
+            {!verificationError && verificationStatus.duplicate === 'success' && (
+              <div className="mt-4 pt-4 border-t border-zinc-800 text-green-300 font-bold">
+                ✅ Validación completada. Iniciando subida segura...
+              </div>
+            )}
           </div>
         )}
 
@@ -205,34 +334,36 @@ export default function NewReportPage() {
           </div>
 
           {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isSubmitting || !file || !location}
-            className="w-full relative overflow-hidden flex items-center justify-center gap-2 p-4 bg-blue-600 hover:bg-blue-700 disabled:bg-zinc-300 dark:disabled:bg-zinc-800 disabled:text-zinc-500 text-white font-bold rounded-2xl transition-colors shadow-lg shadow-blue-500/25"
-          >
-            {isSubmitting && (
-              <div 
-                className="absolute left-0 top-0 bottom-0 bg-blue-800/40 transition-all duration-300" 
-                style={{ width: `${uploadProgress}%` }} 
-              />
-            )}
-            
-            <div className="relative z-10 flex items-center gap-2">
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  {uploadProgress > 0 && uploadProgress < 100 
-                    ? `Subiendo... ${Math.round(uploadProgress)}%` 
-                    : "Procesando..."}
-                </>
-              ) : (
-                <>
-                  <Send className="w-5 h-5" />
-                  Enviar Reporte
-                </>
+          {!isVerifying && (
+            <button
+              type="submit"
+              disabled={isSubmitting || !file || !location}
+              className="w-full relative overflow-hidden flex items-center justify-center gap-2 p-4 bg-blue-600 hover:bg-blue-700 disabled:bg-zinc-300 dark:disabled:bg-zinc-800 disabled:text-zinc-500 text-white font-bold rounded-2xl transition-colors shadow-lg shadow-blue-500/25"
+            >
+              {isSubmitting && (
+                <div 
+                  className="absolute left-0 top-0 bottom-0 bg-blue-800/40 transition-all duration-300" 
+                  style={{ width: `${uploadProgress}%` }} 
+                />
               )}
-            </div>
-          </button>
+              
+              <div className="relative z-10 flex items-center gap-2">
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    {uploadProgress > 0 && uploadProgress < 100 
+                      ? `Subiendo... ${Math.round(uploadProgress)}%` 
+                      : "Procesando..."}
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-5 h-5" />
+                    Ejecutar Verificación IA & Enviar
+                  </>
+                )}
+              </div>
+            </button>
+          )}
 
         </form>
       </div>
