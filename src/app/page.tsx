@@ -5,6 +5,7 @@ import { Camera, MapPin, Award, ArrowRight, Smartphone, Download } from "lucide-
 import { StickyStack } from "@/components/StickyStack";
 import { AnimatedTitle } from "@/components/AnimatedTitle";
 import { Marquee } from "@/components/Marquee";
+import { Parallax3DCard } from "@/components/Parallax3DCard";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -57,71 +58,80 @@ export default function Home() {
   };
 
   const cards = [
-    <div key="card-1" className="w-full max-w-5xl bg-white/70 dark:bg-zinc-950/70 backdrop-blur-2xl text-zinc-900 dark:text-zinc-50 border border-zinc-200/50 dark:border-zinc-800/50 rounded-[2.5rem] p-6 md:p-12 flex flex-col md:flex-row items-stretch gap-6 md:gap-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] group transition-all duration-700 relative overflow-hidden">
-      
-      {/* Text Content */}
-      <div className="flex-1 flex flex-col justify-between space-y-8 relative z-10">
-        <div>
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/50 dark:border-zinc-800/50 mb-8">
-            <Camera className="w-7 h-7 text-zinc-900 dark:text-zinc-100" />
+    <Parallax3DCard key="card-1" className="bg-white/70 dark:bg-zinc-950/70 backdrop-blur-2xl text-zinc-900 dark:text-zinc-50 border border-zinc-200/50 dark:border-zinc-800/50 rounded-[2.5rem] p-6 md:p-12 shadow-md hover:shadow-[0_40px_80px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_40px_80px_rgba(0,0,0,0.5)]">
+      <div style={{ transformStyle: "preserve-3d" }} className="flex flex-col md:flex-row items-stretch gap-6 md:gap-8 w-full h-full relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-zinc-100/50 dark:to-zinc-900/50 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-[2.5rem] -m-6 md:-m-12" style={{ transform: "translateZ(-20px)" }}></div>
+        
+        {/* Text Content */}
+        <div className="flex-1 flex flex-col justify-between space-y-8 relative z-10 transition-transform duration-300 ease-out" style={{ transform: "translateZ(40px)" }}>
+          <div>
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/50 dark:border-zinc-800/50 mb-8 group-hover:scale-110 transition-transform duration-500 shadow-inner">
+              <Camera className="w-7 h-7 text-zinc-800 dark:text-zinc-200" />
+            </div>
+            <h3 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-transparent bg-clip-text bg-gradient-to-br from-zinc-900 to-zinc-500 dark:from-white dark:to-zinc-400">1. Captura</h3>
+            <p className="text-lg md:text-xl text-zinc-600 dark:text-zinc-400 max-w-md font-medium leading-relaxed group-hover:text-zinc-800 dark:group-hover:text-zinc-200 transition-colors duration-500">
+              Usa tu cámara para registrar focos de contaminación. Una sola foto clara es el primer paso para la limpieza del lago.
+            </p>
           </div>
-          <h3 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">1. Captura</h3>
-          <p className="text-lg md:text-xl text-zinc-500 dark:text-zinc-400 max-w-md font-medium leading-relaxed">
-            Usa tu cámara para registrar focos de contaminación. Una sola foto clara es el primer paso para la limpieza del lago.
-          </p>
+        </div>
+
+        {/* Bento Media */}
+        <div className="flex-1 w-full md:w-auto rounded-3xl overflow-hidden bg-zinc-100 dark:bg-zinc-900 relative z-10 shadow-inner group-hover:shadow-2xl transition-all duration-700 ease-out" style={{ transform: "translateZ(80px)" }}>
+          <img src="https://images.unsplash.com/photo-1582239335474-061ff54af3a0?q=80&w=1200&auto=format&fit=crop" alt="Captura" className="w-full h-full object-cover opacity-90 group-hover:scale-110 group-hover:opacity-100 transition-all duration-1000 ease-out" />
         </div>
       </div>
-
-      {/* Bento Media */}
-      <div className="flex-1 w-full md:w-auto rounded-3xl overflow-hidden bg-zinc-100 dark:bg-zinc-900 relative z-10 shadow-inner">
-        <img src="https://images.unsplash.com/photo-1582239335474-061ff54af3a0?q=80&w=1200&auto=format&fit=crop" alt="Captura" className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-all duration-1000 ease-out" />
-      </div>
-    </div>,
+    </Parallax3DCard>,
     
-    <div key="card-2" className="w-full max-w-5xl bg-zinc-50/80 dark:bg-zinc-900/80 backdrop-blur-2xl text-zinc-900 dark:text-zinc-50 border border-zinc-200/50 dark:border-zinc-800/50 rounded-[2.5rem] p-6 md:p-12 flex flex-col md:flex-row-reverse items-stretch gap-6 md:gap-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] group transition-all duration-700 relative overflow-hidden">
-      
-      {/* Text Content */}
-      <div className="flex-1 flex flex-col justify-between space-y-8 relative z-10 pl-0 md:pl-8">
-        <div>
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white dark:bg-black border border-zinc-200/50 dark:border-zinc-800/50 mb-8">
-            <MapPin className="w-7 h-7 text-zinc-900 dark:text-zinc-100" />
+    <Parallax3DCard key="card-2" className="bg-zinc-50/80 dark:bg-zinc-900/80 backdrop-blur-2xl text-zinc-900 dark:text-zinc-50 border border-zinc-200/50 dark:border-zinc-800/50 rounded-[2.5rem] p-6 md:p-12 shadow-md hover:shadow-[0_40px_80px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_40px_80px_rgba(0,0,0,0.5)]">
+      <div style={{ transformStyle: "preserve-3d" }} className="flex flex-col md:flex-row-reverse items-stretch gap-6 md:gap-8 w-full h-full relative">
+        <div className="absolute inset-0 bg-gradient-to-bl from-transparent via-transparent to-zinc-100/50 dark:to-zinc-900/50 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-[2.5rem] -m-6 md:-m-12" style={{ transform: "translateZ(-20px)" }}></div>
+
+        {/* Text Content */}
+        <div className="flex-1 flex flex-col justify-between space-y-8 relative z-10 pl-0 md:pl-8 transition-transform duration-300 ease-out" style={{ transform: "translateZ(40px)" }}>
+          <div>
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white dark:bg-black border border-zinc-200/50 dark:border-zinc-800/50 mb-8 group-hover:scale-110 transition-transform duration-500 shadow-inner">
+              <MapPin className="w-7 h-7 text-zinc-800 dark:text-zinc-200" />
+            </div>
+            <h3 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-transparent bg-clip-text bg-gradient-to-br from-zinc-900 to-zinc-500 dark:from-white dark:to-zinc-400">2. Localiza</h3>
+            <p className="text-lg md:text-xl text-zinc-600 dark:text-zinc-400 max-w-md font-medium leading-relaxed group-hover:text-zinc-800 dark:group-hover:text-zinc-200 transition-colors duration-500">
+              Nuestra tecnología ancla las coordenadas GPS exactas. Las brigadas de limpieza sabrán exactamente dónde intervenir.
+            </p>
           </div>
-          <h3 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">2. Localiza</h3>
-          <p className="text-lg md:text-xl text-zinc-500 dark:text-zinc-400 max-w-md font-medium leading-relaxed">
-            Nuestra tecnología ancla las coordenadas GPS exactas. Las brigadas de limpieza sabrán exactamente dónde intervenir.
-          </p>
+        </div>
+
+        {/* Bento Media */}
+        <div className="flex-1 w-full md:w-auto rounded-3xl overflow-hidden bg-white dark:bg-black relative z-10 shadow-inner group-hover:shadow-2xl transition-all duration-700 ease-out" style={{ transform: "translateZ(80px)" }}>
+          <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1200&auto=format&fit=crop" alt="Localiza" className="w-full h-full object-cover opacity-90 group-hover:scale-110 group-hover:opacity-100 transition-all duration-1000 ease-out grayscale group-hover:grayscale-0" />
         </div>
       </div>
+    </Parallax3DCard>,
 
-      {/* Bento Media */}
-      <div className="flex-1 w-full md:w-auto rounded-3xl overflow-hidden bg-white dark:bg-black relative z-10 shadow-inner">
-        <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1200&auto=format&fit=crop" alt="Localiza" className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-all duration-1000 ease-out grayscale hover:grayscale-0" />
-      </div>
-    </div>,
+    <Parallax3DCard key="card-3" className="bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 rounded-[2.5rem] p-6 md:p-16 shadow-2xl hover:shadow-[0_50px_100px_rgba(0,0,0,0.5)] dark:hover:shadow-[0_50px_100px_rgba(255,255,255,0.2)] border border-zinc-800 dark:border-zinc-200">
+      <div style={{ transformStyle: "preserve-3d" }} className="flex flex-col items-center text-center gap-8 md:gap-12 w-full h-full relative">
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent dark:from-zinc-100 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-[2.5rem] -m-6 md:-m-16" style={{ transform: "translateZ(-30px)" }}></div>
 
-    <div key="card-3" className="w-full max-w-5xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 rounded-[2.5rem] p-6 md:p-16 flex flex-col items-center text-center gap-8 md:gap-12 shadow-2xl group transition-all duration-700 relative overflow-hidden">
-      
-      <div className="w-24 h-24 rounded-3xl bg-zinc-800 dark:bg-zinc-100 flex items-center justify-center border border-zinc-700 dark:border-zinc-200 shadow-sm relative z-10 group-hover:-translate-y-2 transition-transform duration-500">
-        <Smartphone className="w-12 h-12 text-white dark:text-zinc-900" />
-      </div>
-      
-      <div className="space-y-6 max-w-3xl relative z-10">
-        <h3 className="text-5xl md:text-6xl font-bold tracking-tight">3. Denuncia</h3>
-        <p className="text-xl md:text-2xl text-zinc-400 dark:text-zinc-600 font-medium leading-relaxed">
-          Tu reporte con foto y ubicación queda registrado al instante. Las autoridades locales reciben la alerta y pueden coordinar la limpieza del área afectada.
-        </p>
-      </div>
+        <div className="w-24 h-24 rounded-3xl bg-zinc-800 dark:bg-zinc-100 flex items-center justify-center border border-zinc-700 dark:border-zinc-200 shadow-md relative z-10 group-hover:scale-110 transition-transform duration-500 ease-out" style={{ transform: "translateZ(60px)" }}>
+          <Smartphone className="w-12 h-12 text-white dark:text-zinc-900 group-hover:animate-bounce" />
+        </div>
+        
+        <div className="space-y-6 max-w-3xl relative z-10 transition-transform duration-500 ease-out" style={{ transform: "translateZ(40px)" }}>
+          <h3 className="text-5xl md:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-400 dark:from-zinc-900 dark:to-zinc-500">3. Denuncia</h3>
+          <p className="text-xl md:text-2xl text-zinc-300 dark:text-zinc-600 font-medium leading-relaxed group-hover:text-white dark:group-hover:text-zinc-900 transition-colors duration-500">
+            Tu reporte con foto y ubicación queda registrado al instante. Las autoridades locales reciben la alerta y pueden coordinar la limpieza del área afectada.
+          </p>
+        </div>
 
-      <div className="relative z-10 mt-4">
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-3 px-8 py-4 bg-white dark:bg-zinc-900 text-zinc-950 dark:text-white rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-lg border border-zinc-200 dark:border-zinc-800"
-        >
-          <ArrowRight className="w-6 h-6" />
-          Hacer un reporte
-        </Link>
+        <div className="relative z-10 mt-4 transition-transform duration-500 ease-out" style={{ transform: "translateZ(90px)" }}>
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-3 px-8 py-4 bg-white dark:bg-zinc-900 text-zinc-950 dark:text-white rounded-full font-bold text-lg hover:scale-110 active:scale-95 transition-transform shadow-2xl border border-zinc-200 dark:border-zinc-800 group/btn"
+          >
+            <ArrowRight className="w-6 h-6 group-hover/btn:translate-x-1 transition-transform" />
+            Hacer un reporte
+          </Link>
+        </div>
       </div>
-    </div>
+    </Parallax3DCard>
   ];
 
   return (
