@@ -1,6 +1,6 @@
 import { auth, db } from "./clientApp";
 import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, onSnapshot } from "firebase/firestore";
 
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: "select_account" });
@@ -42,23 +42,33 @@ export async function logout() {
 }
 
 export function subscribeToAuthChanges(callback: (userProfile: UserProfile | null) => void) {
+  let unsubscribeDoc: (() => void) | null = null;
+  
   return onAuthStateChanged(auth, async (firebaseUser) => {
+    if (unsubscribeDoc) {
+      unsubscribeDoc();
+      unsubscribeDoc = null;
+    }
+    
     if (firebaseUser) {
       const userDocRef = doc(db, "users", firebaseUser.uid);
-      const userDoc = await getDoc(userDocRef);
-      if (userDoc.exists()) {
-        callback(userDoc.data() as UserProfile);
-      } else {
-        // Fallback for edge cases where document isn't created yet
-        callback({
-          uid: firebaseUser.uid,
-          email: firebaseUser.email || "",
-          displayName: firebaseUser.displayName || "",
-          photoURL: firebaseUser.photoURL || "",
-          role: "user",
-          points: 0
-        });
-      }
+      
+      // Subscribe to real-time changes on the user's document (for points and role updates)
+      unsubscribeDoc = onSnapshot(userDocRef, (docSnap) => {
+        if (docSnap.exists()) {
+          callback(docSnap.data() as UserProfile);
+        } else {
+          // Fallback if doc is still creating
+          callback({
+            uid: firebaseUser.uid,
+            email: firebaseUser.email || "",
+            displayName: firebaseUser.displayName || "",
+            photoURL: firebaseUser.photoURL || "",
+            role: "user",
+            points: 0
+          });
+        }
+      });
     } else {
       callback(null);
     }

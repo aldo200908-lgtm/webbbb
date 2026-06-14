@@ -39,7 +39,7 @@ export function verifyTime(file: File): boolean {
  */
 let model: cocoSsd.ObjectDetection | null = null;
 
-export async function verifyGarbage(imageElement: HTMLImageElement): Promise<boolean> {
+export async function verifyGarbage(imageElement: HTMLImageElement): Promise<{ passed: boolean, labels: string[], maxConfidence: number }> {
   if (!model) {
     // tfjs automatically sets the backend
     await tf.ready();
@@ -58,13 +58,13 @@ export async function verifyGarbage(imageElement: HTMLImageElement): Promise<boo
   ];
 
   // We look for any object in the garbage classes with > 60% confidence
-  // Note: 80% is extremely strict for Coco-SSD. We will use 60% as a pragmatic threshold for "garbage"
-  // but if the user strictly wants 80%, we can filter by 0.8. We'll use 0.6 because Coco-SSD rarely gives >80% on dirty compressed garbage.
-  const hasGarbage = predictions.some(p => garbageClasses.includes(p.class) && p.score >= 0.60);
+  const validPredictions = predictions.filter(p => garbageClasses.includes(p.class) && p.score >= 0.60);
   
-  // If it didn't find specific objects, but found a lot of overlapping weird boxes, it might be an unrecognized pile.
-  // For this strict version, we just return the boolean based on the specific classes.
-  return hasGarbage;
+  const passed = validPredictions.length > 0;
+  const labels = validPredictions.map(p => p.class);
+  const maxConfidence = passed ? Math.max(...validPredictions.map(p => p.score)) : 0;
+
+  return { passed, labels, maxConfidence };
 }
 
 /**

@@ -133,8 +133,8 @@ export default function NewReportPage() {
 
       // 4. Detección de Basura (TensorFlow)
       setVerificationStatus(s => ({ ...s, garbage: 'loading' }));
-      const isGarbage = await verifyGarbage(imgElement);
-      if (!isGarbage) {
+      const aiResult = await verifyGarbage(imgElement);
+      if (!aiResult.passed) {
         setVerificationStatus(s => ({ ...s, garbage: 'error' }));
         throw new Error("La IA no detectó basura (plásticos, botellas, residuos) con confianza suficiente.");
       }
@@ -159,7 +159,9 @@ export default function NewReportPage() {
         lat: location.lat,
         lng: location.lng,
         userId: user.uid,
-        imageHash: imgHash
+        imageHash: imgHash,
+        aiLabels: aiResult.labels,
+        aiConfidence: aiResult.maxConfidence
       }, (progress) => {
         setUploadProgress(progress);
       });

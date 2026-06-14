@@ -1,5 +1,5 @@
 import { db, storage } from "./clientApp";
-import { collection, addDoc, serverTimestamp, query, orderBy, limit, getDocs } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, query, orderBy, limit, getDocs, doc, runTransaction } from "firebase/firestore";
 import { areHashesTooSimilar } from "../verification/aiVerification";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
@@ -10,6 +10,8 @@ export interface ReportData {
   longitude: number | null;
   imageUrl: string;
   imageHash: string;
+  aiLabels?: string[];
+  aiConfidence?: number;
   status: string;
   createdAt: any;
 }
@@ -67,7 +69,7 @@ export async function checkForDuplicateHash(newHash: string): Promise<boolean> {
 }
 
 export async function submitReport(
-  data: { file: File, description: string, lat: number | null, lng: number | null, userId: string, imageHash: string },
+  data: { file: File, description: string, lat: number | null, lng: number | null, userId: string, imageHash: string, aiLabels: string[], aiConfidence: number },
   onProgress?: (progress: number) => void
 ) {
   try {
@@ -97,7 +99,9 @@ export async function submitReport(
       longitude: data.lng,
       imageUrl: base64Image, // Guardamos la imagen completa como texto!
       imageHash: data.imageHash,
-      status: 'pending', // 'pending', 'verified', 'cleaned'
+      aiLabels: data.aiLabels,
+      aiConfidence: data.aiConfidence,
+      status: 'pending', // 'pending', 'verified', 'cleaned', 'rejected', 'fraud'
       createdAt: serverTimestamp(),
     };
 
@@ -105,6 +109,22 @@ export async function submitReport(
     console.timeEnd("guardar_firestore");
     console.log("Documento creado en Firestore con ID:", docRef.id);
     
+    // Add Provisional Points (+50)
+    try {
+      const userRef = doc(db, "users", data.userId);
+      await runTransaction(db, async (transaction) => {
+        const userDoc = await transaction.get(userRef);
+        if (!userDoc.exists()) {
+          throw new Error("El usuario no existe!");
+        }
+        const currentPoints = userDoc.data().points || 0;
+        transaction.update(userRef, { points: currentPoints + 50 });
+      });
+      console.log("Se agregaron 50 puntos provisionales al usuario.");
+    } catch (txErr) {
+      console.error("Error al asignar puntos provisionales:", txErr);
+    }
+
     if (onProgress) onProgress(100);
     console.log("=== ENVÍO DE REPORTE COMPLETADO ===");
     

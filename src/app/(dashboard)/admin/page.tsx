@@ -48,17 +48,17 @@ export default function AdminPage() {
     fetchPendingReports();
   }, [user]);
 
-  const handleAction = async (reportId: string, userId: string, action: "verified" | "rejected") => {
+  const handleAction = async (reportId: string, userId: string, action: "verified" | "rejected" | "fraud") => {
     setProcessingId(reportId);
     try {
       const reportRef = doc(db, "reports", reportId);
       await updateDoc(reportRef, { status: action });
       
-      // Si se aprueba y no es anónimo, sumar puntos al usuario
-      if (action === "verified" && userId !== "anonymous") {
+      // Si se rechaza o es fraude, retirar los 50 puntos provisionales que se le dieron al enviar
+      if ((action === "rejected" || action === "fraud") && userId !== "anonymous") {
         const userRef = doc(db, "users", userId);
-        // Otorgar 50 puntos por reporte validado
-        await updateDoc(userRef, { points: increment(50) });
+        // Retirar 50 puntos
+        await updateDoc(userRef, { points: increment(-50) });
       }
       
       // Remover de la lista local
@@ -128,28 +128,53 @@ export default function AdminPage() {
                     </span>
                   </div>
                   
-                  <p className="text-sm text-foreground mb-6 flex-1">
+                  <p className="text-sm text-foreground flex-1">
                     {report.description || <span className="italic text-muted-foreground">Sin descripción proporcionada.</span>}
                   </p>
                   
-                  <div className="flex gap-3 mt-auto">
+                  {report.aiLabels && report.aiLabels.length > 0 && (
+                    <div className="mt-4 mb-6 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-900/50">
+                      <p className="text-xs font-bold text-blue-700 dark:text-blue-400 mb-1 flex items-center gap-1">
+                        🤖 Veredicto IA (Filtro)
+                      </p>
+                      <p className="text-sm text-blue-900 dark:text-blue-300">
+                        Detectado: <span className="font-semibold">{report.aiLabels.join(", ")}</span>
+                      </p>
+                      {report.aiConfidence && (
+                        <p className="text-xs text-blue-600 dark:text-blue-500 mt-1">
+                          Confianza: {Math.round(report.aiConfidence * 100)}%
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  
+                  <div className="flex gap-2 mt-auto flex-wrap">
                     <motion.button 
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => handleAction(report.id, report.userId, "rejected")}
                       disabled={processingId === report.id}
-                      className="flex-1 px-4 py-2.5 rounded-full font-medium text-sm border border-red-200 text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                      className="flex-1 px-3 py-2.5 rounded-xl font-medium text-xs border border-orange-200 text-orange-600 hover:bg-orange-50 dark:border-orange-900/50 dark:text-orange-400 dark:hover:bg-orange-900/20 transition-colors disabled:opacity-50"
                     >
-                      Rechazar
+                      Rechazar (-50pts)
+                    </motion.button>
+                    <motion.button 
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => handleAction(report.id, report.userId, "fraud")}
+                      disabled={processingId === report.id}
+                      className="flex-1 px-3 py-2.5 rounded-xl font-medium text-xs border border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900/50 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50"
+                    >
+                      Fraude (-50pts)
                     </motion.button>
                     <motion.button 
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => handleAction(report.id, report.userId, "verified")}
                       disabled={processingId === report.id}
-                      className="flex-1 px-4 py-2.5 rounded-full font-medium text-sm bg-foreground text-background hover:bg-zinc-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                      className="w-full sm:flex-1 px-4 py-2.5 rounded-xl font-bold text-sm bg-blue-600 text-white hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                     >
-                      {processingId === report.id ? <Loader2 className="w-4 h-4 animate-spin" /> : "Aprobar (+50 pts)"}
+                      {processingId === report.id ? <Loader2 className="w-4 h-4 animate-spin" /> : "Aprobar Definitivo"}
                     </motion.button>
                   </div>
                 </div>
