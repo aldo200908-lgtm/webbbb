@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { Camera, MapPin, Award, ArrowRight, Smartphone, Download } from "lucide-react";
-import { StickyStack } from "@/components/StickyStack";
 import { AnimatedTitle } from "@/components/AnimatedTitle";
 import { Marquee } from "@/components/Marquee";
 import { Parallax3DCard } from "@/components/Parallax3DCard";
+import { Carousel3D } from "@/components/Carousel3D";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -197,14 +197,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Sticky Stack Interactive Section */}
-      <section className="relative w-full py-32 px-6 bg-background">
+      {/* Carousel Interactive Section */}
+      <section className="relative w-full py-32 px-6 bg-background overflow-hidden">
         <div className="max-w-7xl mx-auto mb-16 md:mb-24 text-center">
           <h2 className="text-3xl md:text-6xl font-bold tracking-tight mb-4 md:mb-6">El proceso es simple.</h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">Tres pasos auditados para garantizar que cada reporte llegue a las autoridades correctas.</p>
         </div>
         
-        <StickyStack cards={cards} />
+        <Carousel3D items={cards} autoPlayInterval={5000} />
       </section>
 
       {/* Trust & Footer Strip */}
