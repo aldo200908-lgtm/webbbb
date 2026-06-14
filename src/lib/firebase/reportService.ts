@@ -12,8 +12,8 @@ export interface ReportData {
   createdAt: any;
 }
 
-// Helper to compress image
-const compressImage = async (file: File): Promise<Blob> => {
+// Helper to compress image and convert to Base64
+const compressImageToBase64 = async (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.src = URL.createObjectURL(file);
@@ -21,7 +21,7 @@ const compressImage = async (file: File): Promise<Blob> => {
       const canvas = document.createElement('canvas');
       let width = img.width;
       let height = img.height;
-      const MAX_SIZE = 1024;
+      const MAX_SIZE = 800; // Un poco más pequeño para Base64
       
       if (width > height) {
         if (width > MAX_SIZE) {
@@ -40,13 +40,9 @@ const compressImage = async (file: File): Promise<Blob> => {
       const ctx = canvas.getContext('2d');
       ctx?.drawImage(img, 0, 0, width, height);
       
-      canvas.toBlob((blob) => {
-        if (blob) {
-          resolve(blob);
-        } else {
-          reject(new Error("Error al comprimir la imagen"));
-        }
-      }, 'image/jpeg', 0.7);
+      // Convertir directamente a texto Base64
+      const base64String = canvas.toDataURL('image/jpeg', 0.6);
+      resolve(base64String);
     };
     img.onerror = (err) => reject(err);
   });
@@ -57,64 +53,31 @@ export async function submitReport(
   onProgress?: (progress: number) => void
 ) {
   try {
-    console.log("=== INICIANDO ENVÍO DE REPORTE ===");
+    console.log("=== INICIANDO ENVÍO DE REPORTE (MODO BASE64) ===");
     console.log("Archivo original seleccionado:", data.file.name, "Tamaño:", (data.file.size / 1024 / 1024).toFixed(2), "MB");
 
-    // 1. Create a unique path for the image
-    const fileName = `reports/${data.userId}/${Date.now()}.jpg`;
-    const storageRef = ref(storage, fileName);
+    if (onProgress) onProgress(20);
 
-    // 2. Compress the image to make it ultra fast
-    console.time("compresion_imagen");
-    console.log("Iniciando compresión de imagen...");
-    const compressedBlob = await compressImage(data.file);
-    console.timeEnd("compresion_imagen");
-    console.log("Tamaño imagen comprimida:", (compressedBlob.size / 1024).toFixed(2), "KB");
-
-    // 3. Upload the compressed image to Firebase Storage using uploadBytesResumable
-    console.time("subida_storage");
-    console.log("Iniciando subida a Firebase Storage (uploadBytesResumable)...");
+    // 1. Compress the image directly to Base64 Text
+    console.time("compresion_imagen_base64");
+    console.log("Iniciando compresión de imagen a Base64...");
+    const base64Image = await compressImageToBase64(data.file);
+    console.timeEnd("compresion_imagen_base64");
     
-    const uploadTask = uploadBytesResumable(storageRef, compressedBlob);
+    // Calcular peso en KB del texto (1 caracter = 1 byte aprox)
+    console.log("Tamaño imagen Base64:", (base64Image.length / 1024).toFixed(2), "KB");
+    
+    if (onProgress) onProgress(60);
 
-    const downloadURL = await new Promise<string>((resolve, reject) => {
-      uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log(`Subida a Storage: ${progress.toFixed(2)}% completado.`);
-          if (onProgress) onProgress(progress);
-        },
-        (error) => {
-          console.error("Error durante uploadBytesResumable:", error);
-          reject(error);
-        },
-        async () => {
-          console.log("Subida completada exitosamente. Obteniendo DownloadURL...");
-          console.timeEnd("subida_storage");
-          try {
-            console.time("obtener_url");
-            const url = await getDownloadURL(uploadTask.snapshot.ref);
-            console.timeEnd("obtener_url");
-            console.log("DownloadURL obtenido:", url);
-            resolve(url);
-          } catch (urlError) {
-            console.error("Error al obtener DownloadURL:", urlError);
-            reject(urlError);
-          }
-        }
-      );
-    });
-
-    // 4. Save the report document to Firestore
+    // 2. Save the report document directly to Firestore (Saltando Storage!)
     console.time("guardar_firestore");
-    console.log("Guardando datos en Firestore...");
+    console.log("Guardando datos e imagen en Firestore...");
     const reportDoc = {
       userId: data.userId,
       description: data.description,
       latitude: data.lat,
       longitude: data.lng,
-      imageUrl: downloadURL,
+      imageUrl: base64Image, // Guardamos la imagen completa como texto!
       status: 'pending', // 'pending', 'verified', 'cleaned'
       createdAt: serverTimestamp(),
     };
@@ -122,6 +85,8 @@ export async function submitReport(
     const docRef = await addDoc(collection(db, "reports"), reportDoc);
     console.timeEnd("guardar_firestore");
     console.log("Documento creado en Firestore con ID:", docRef.id);
+    
+    if (onProgress) onProgress(100);
     console.log("=== ENVÍO DE REPORTE COMPLETADO ===");
     
     return docRef.id;
