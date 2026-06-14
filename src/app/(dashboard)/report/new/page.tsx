@@ -23,8 +23,8 @@ export default function NewReportPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
-      if (selectedFile.size > 5 * 1024 * 1024) {
-        setError("La imagen es demasiado pesada. El límite es 5MB.");
+      if (selectedFile.size > 10 * 1024 * 1024) {
+        setError("La imagen es demasiado pesada. El límite es 10MB.");
         return;
       }
       setFile(selectedFile);
@@ -88,7 +88,11 @@ export default function NewReportPage() {
       router.push("/map");
     } catch (err: any) {
       console.error(err);
-      setError("Ocurrió un error al enviar el reporte. Verifica tu conexión o intenta más tarde.");
+      if (err.code === "storage/unauthorized" || err.message?.includes("permission") || err.message?.includes("Missing or insufficient permissions")) {
+        setError("Error de permisos: Asegúrate de haber habilitado 'Storage' y 'Firestore' en Firebase Console, y que sus reglas permitan escritura.");
+      } else {
+        setError("Ocurrió un error al enviar el reporte. Verifica tu conexión a internet o intenta de nuevo.");
+      }
       setIsSubmitting(false);
     }
   };
@@ -126,7 +130,7 @@ export default function NewReportPage() {
                   <ImageIcon className="w-6 h-6" />
                 </div>
                 <p className="font-medium text-zinc-600 dark:text-zinc-300">Toca para abrir cámara o galería</p>
-                <p className="text-xs text-zinc-400 mt-1">Formatos soportados: JPG, PNG (Max 5MB)</p>
+                <p className="text-xs text-zinc-400 mt-1">Formatos soportados: JPG, PNG (Max 10MB)</p>
               </div>
             ) : (
               <div className="relative w-full h-64 md:h-80 rounded-3xl overflow-hidden group">
