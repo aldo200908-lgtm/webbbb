@@ -16,6 +16,7 @@ export default function NewReportPage() {
   const [location, setLocation] = useState<{ lat: number, lng: number } | null>(null);
   const [isLocating, setIsLocating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -83,6 +84,8 @@ export default function NewReportPage() {
         lat: location.lat,
         lng: location.lng,
         userId: user.uid
+      }, (progress) => {
+        setUploadProgress(progress);
       });
       // Redirect to a success page or map
       router.push("/map");
@@ -205,19 +208,30 @@ export default function NewReportPage() {
           <button
             type="submit"
             disabled={isSubmitting || !file || !location}
-            className="w-full flex items-center justify-center gap-2 p-4 bg-blue-600 hover:bg-blue-700 disabled:bg-zinc-300 dark:disabled:bg-zinc-800 disabled:text-zinc-500 text-white font-bold rounded-2xl transition-colors shadow-lg shadow-blue-500/25"
+            className="w-full relative overflow-hidden flex items-center justify-center gap-2 p-4 bg-blue-600 hover:bg-blue-700 disabled:bg-zinc-300 dark:disabled:bg-zinc-800 disabled:text-zinc-500 text-white font-bold rounded-2xl transition-colors shadow-lg shadow-blue-500/25"
           >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                Enviando Reporte...
-              </>
-            ) : (
-              <>
-                <Send className="w-5 h-5" />
-                Enviar Reporte
-              </>
+            {isSubmitting && (
+              <div 
+                className="absolute left-0 top-0 bottom-0 bg-blue-800/40 transition-all duration-300" 
+                style={{ width: `${uploadProgress}%` }} 
+              />
             )}
+            
+            <div className="relative z-10 flex items-center gap-2">
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  {uploadProgress > 0 && uploadProgress < 100 
+                    ? `Subiendo... ${Math.round(uploadProgress)}%` 
+                    : "Procesando..."}
+                </>
+              ) : (
+                <>
+                  <Send className="w-5 h-5" />
+                  Enviar Reporte
+                </>
+              )}
+            </div>
           </button>
 
         </form>
