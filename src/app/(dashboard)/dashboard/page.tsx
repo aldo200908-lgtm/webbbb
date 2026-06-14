@@ -148,16 +148,16 @@ export default function DashboardPage() {
               </div>
             ) : (
               reports.map(report => (
-                <div key={report.id} className="report-card flex gap-4 p-4 bg-background rounded-2xl border border-zinc-200 hover:shadow-sm transition-shadow">
-                  <div className="w-24 h-24 rounded-xl bg-zinc-200 overflow-hidden flex-shrink-0 relative">
-                    <img src={report.photoUrl} alt="Reporte" className="w-full h-full object-cover" />
+                <div key={report.id} className="report-card flex gap-4 p-4 bg-background border border-zinc-200/60 dark:border-zinc-800/60 rounded-2xl hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors shadow-sm">
+                  <div className="w-24 h-24 rounded-xl bg-zinc-200 overflow-hidden flex-shrink-0">
+                    <img src={report.imageUrl} alt="Reporte" className="w-full h-full object-cover" />
                   </div>
                   <div className="flex flex-col justify-between flex-1 py-1">
                     <div>
                       <div className="flex justify-between items-start">
                         <p className="font-semibold text-foreground flex items-center">
-                          <MapPin className="w-4 h-4 mr-1 text-muted-foreground" />
-                          {report.location ? `${report.location.lat.toFixed(4)}, ${report.location.lng.toFixed(4)}` : "Ubicación desconocida"}
+                          <MapPin className="w-4 h-4 mr-1 opacity-70" />
+                          {report.latitude && report.longitude ? `${report.latitude.toFixed(4)}, ${report.longitude.toFixed(4)}` : "Sin ubicación"}
                         </p>
                         {report.status === "verified" ? (
                           <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-50 text-green-700 text-xs font-medium border border-green-200">

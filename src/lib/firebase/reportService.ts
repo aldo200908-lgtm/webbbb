@@ -3,36 +3,36 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export interface ReportData {
-  description: string;
-  location: { lat: number; lng: number } | null;
-  photoUrl: string;
   userId: string;
-  status: "pending" | "verified" | "rejected";
+  description: string;
+  latitude: number | null;
+  longitude: number | null;
+  imageUrl: string;
+  status: string;
   createdAt: any;
 }
 
-export async function createReport(
-  file: File, 
-  description: string, 
-  location: { lat: number; lng: number } | null,
-  userId: string = "anonymous"
-) {
-  // 1. Upload photo
-  const filename = `${Date.now()}_${file.name}`;
-  const storageRef = ref(storage, `reports/${filename}`);
-  await uploadBytes(storageRef, file);
-  const photoUrl = await getDownloadURL(storageRef);
+export async function submitReport(data: { file: File, description: string, lat: number | null, lng: number | null, userId: string }) {
+  // 1. Create a unique path for the image
+  const fileExtension = data.file.name.split('.').pop();
+  const fileName = `reports/${data.userId}/${Date.now()}.${fileExtension}`;
+  const storageRef = ref(storage, fileName);
 
-  // 2. Save to Firestore
-  const reportRef = collection(db, "reports");
-  const docRef = await addDoc(reportRef, {
-    description,
-    location,
-    photoUrl,
-    userId,
-    status: "pending",
-    createdAt: serverTimestamp()
-  });
+  // 2. Upload the image to Firebase Storage
+  const snapshot = await uploadBytes(storageRef, data.file);
+  const downloadURL = await getDownloadURL(snapshot.ref);
 
+  // 3. Save the report document to Firestore
+  const reportDoc = {
+    userId: data.userId,
+    description: data.description,
+    latitude: data.lat,
+    longitude: data.lng,
+    imageUrl: downloadURL,
+    status: 'pending', // 'pending', 'verified', 'cleaned'
+    createdAt: serverTimestamp(),
+  };
+
+  const docRef = await addDoc(collection(db, "reports"), reportDoc);
   return docRef.id;
 }

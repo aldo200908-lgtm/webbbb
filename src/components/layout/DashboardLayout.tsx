@@ -37,7 +37,20 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             <p className="text-muted-foreground text-sm">Debes autenticarte para acceder a tu panel y gestionar tus puntos.</p>
           </div>
           <button 
-            onClick={() => signInWithGoogle()}
+            onClick={async () => {
+              try {
+                await signInWithGoogle();
+              } catch (error: any) {
+                console.error("Login error:", error);
+                if (error.code === 'auth/operation-not-allowed') {
+                  alert("Error: El inicio de sesión con Google no está habilitado en Firebase. Ve a Firebase Console > Authentication > Sign-in method y habilita Google.");
+                } else if (error.code === 'auth/popup-closed-by-user') {
+                  // user closed the popup, do nothing
+                } else {
+                  alert("Error al iniciar sesión: " + (error.message || "Desconocido"));
+                }
+              }
+            }}
             className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-foreground text-background font-medium rounded-full hover:bg-zinc-800 transition-colors"
           >
             <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />

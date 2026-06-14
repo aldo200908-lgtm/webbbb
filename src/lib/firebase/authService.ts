@@ -3,7 +3,7 @@ import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
 const googleProvider = new GoogleAuthProvider();
-
+googleProvider.setCustomParameters({ prompt: "select_account" });
 export interface UserProfile {
   uid: string;
   email: string;

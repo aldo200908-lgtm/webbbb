@@ -115,13 +115,13 @@ export default function AdminPage() {
                 className="flex flex-col bg-background rounded-3xl border border-zinc-200 overflow-hidden hover:shadow-sm transition-shadow"
               >
                 <div className="w-full aspect-video bg-zinc-100 relative">
-                  <img src={report.photoUrl} alt="Reporte" className="w-full h-full object-cover" />
+                  <img src={report.imageUrl} alt="Reporte" className="w-full h-full object-cover" />
                 </div>
                 <div className="p-6 flex flex-col flex-1">
                   <div className="flex justify-between items-start mb-4">
                     <p className="font-semibold text-foreground flex items-center">
                       <MapPin className="w-4 h-4 mr-1 text-muted-foreground" />
-                      {report.location ? `${report.location.lat.toFixed(4)}, ${report.location.lng.toFixed(4)}` : "Ubicación desconocida"}
+                      {report.latitude && report.longitude ? `${report.latitude.toFixed(4)}, ${report.longitude.toFixed(4)}` : "Sin ubicación"}
                     </p>
                     <span className="text-xs text-muted-foreground">
                       Usuario: {report.userId === "anonymous" ? "Anónimo" : report.userId.slice(0,6) + "..."}
