@@ -32,7 +32,6 @@ export function Carousel3D({ items, autoPlayInterval = 6000 }: Carousel3DProps) 
       opacity: 0,
       scale: 0.8,
       rotateY: direction > 0 ? 30 : -30,
-      filter: "blur(10px)"
     }),
     center: {
       zIndex: 1,
@@ -40,7 +39,6 @@ export function Carousel3D({ items, autoPlayInterval = 6000 }: Carousel3DProps) 
       opacity: 1,
       scale: 1,
       rotateY: 0,
-      filter: "blur(0px)"
     },
     exit: (direction: number) => ({
       zIndex: 0,
@@ -48,7 +46,6 @@ export function Carousel3D({ items, autoPlayInterval = 6000 }: Carousel3DProps) 
       opacity: 0,
       scale: 0.8,
       rotateY: direction < 0 ? 30 : -30,
-      filter: "blur(10px)"
     })
   };
 

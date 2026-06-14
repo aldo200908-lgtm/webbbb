@@ -58,7 +58,7 @@ export default function Home() {
   };
 
   const cards = [
-    <Parallax3DCard key="card-1" className="bg-white/70 dark:bg-zinc-950/70 backdrop-blur-2xl text-zinc-900 dark:text-zinc-50 border border-zinc-200/50 dark:border-zinc-800/50 rounded-[2.5rem] p-6 md:p-12 shadow-md hover:shadow-[0_40px_80px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_40px_80px_rgba(0,0,0,0.5)]">
+    <Parallax3DCard key="card-1" className="bg-white/70 dark:bg-zinc-950/70 md:backdrop-blur-2xl text-zinc-900 dark:text-zinc-50 border border-zinc-200/50 dark:border-zinc-800/50 rounded-[2.5rem] p-6 md:p-12 shadow-md hover:shadow-[0_40px_80px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_40px_80px_rgba(0,0,0,0.5)]">
       <div style={{ transformStyle: "preserve-3d" }} className="flex flex-col md:flex-row items-stretch gap-6 md:gap-8 w-full h-full relative">
         <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-zinc-100/50 dark:to-zinc-900/50 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-[2.5rem] -m-6 md:-m-12" style={{ transform: "translateZ(-20px)" }}></div>
         
@@ -82,7 +82,7 @@ export default function Home() {
       </div>
     </Parallax3DCard>,
     
-    <Parallax3DCard key="card-2" className="bg-zinc-50/80 dark:bg-zinc-900/80 backdrop-blur-2xl text-zinc-900 dark:text-zinc-50 border border-zinc-200/50 dark:border-zinc-800/50 rounded-[2.5rem] p-6 md:p-12 shadow-md hover:shadow-[0_40px_80px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_40px_80px_rgba(0,0,0,0.5)]">
+    <Parallax3DCard key="card-2" className="bg-zinc-50/80 dark:bg-zinc-900/80 md:backdrop-blur-2xl text-zinc-900 dark:text-zinc-50 border border-zinc-200/50 dark:border-zinc-800/50 rounded-[2.5rem] p-6 md:p-12 shadow-md hover:shadow-[0_40px_80px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_40px_80px_rgba(0,0,0,0.5)]">
       <div style={{ transformStyle: "preserve-3d" }} className="flex flex-col md:flex-row-reverse items-stretch gap-6 md:gap-8 w-full h-full relative">
         <div className="absolute inset-0 bg-gradient-to-bl from-transparent via-transparent to-zinc-100/50 dark:to-zinc-900/50 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-[2.5rem] -m-6 md:-m-12" style={{ transform: "translateZ(-20px)" }}></div>
 

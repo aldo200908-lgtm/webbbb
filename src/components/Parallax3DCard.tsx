@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, ReactNode, MouseEvent } from "react";
+import { useRef, useState, useEffect, ReactNode, MouseEvent } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 
 interface Parallax3DCardProps {
@@ -10,6 +10,11 @@ interface Parallax3DCardProps {
 
 export function Parallax3DCard({ children, className = "" }: Parallax3DCardProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const [isHoverable, setIsHoverable] = useState(false);
+
+  useEffect(() => {
+    setIsHoverable(window.matchMedia("(hover: hover)").matches);
+  }, []);
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -21,7 +26,7 @@ export function Parallax3DCard({ children, className = "" }: Parallax3DCardProps
   const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-10deg", "10deg"]);
 
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return;
+    if (!ref.current || !isHoverable) return;
     const rect = ref.current.getBoundingClientRect();
     const width = rect.width;
     const height = rect.height;
@@ -37,25 +42,26 @@ export function Parallax3DCard({ children, className = "" }: Parallax3DCardProps
   };
 
   const handleMouseLeave = () => {
+    if (!isHoverable) return;
     x.set(0);
     y.set(0);
   };
 
   return (
-    <div style={{ perspective: "1500px" }} className="w-full max-w-5xl group">
+    <div style={{ perspective: isHoverable ? "1500px" : "none" }} className="w-full max-w-5xl group">
       <motion.div
         ref={ref}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         style={{
-          rotateX,
-          rotateY,
-          transformStyle: "preserve-3d",
+          rotateX: isHoverable ? rotateX : 0,
+          rotateY: isHoverable ? rotateY : 0,
+          transformStyle: isHoverable ? "preserve-3d" : "flat",
         }}
         className={`w-full h-full relative transition-colors duration-700 ${className}`}
       >
         <div 
-          style={{ transformStyle: "preserve-3d" }}
+          style={{ transformStyle: isHoverable ? "preserve-3d" : "flat" }}
           className="w-full h-full"
         >
           {children}
